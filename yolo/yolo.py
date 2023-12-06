@@ -30,7 +30,7 @@ def classify(image_to_classify):
     im = Image.fromarray(image_to_classify)
     yolo_results = model.predict(im)
     render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
-    render.show()
+    #render.show()
 
     yolo_boxes = yolo_results[0].boxes.xyxy.tolist()
     yolo_class_indices = yolo_results[0].boxes.cls.tolist()
