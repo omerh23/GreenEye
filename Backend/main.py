@@ -7,7 +7,6 @@ from PIL import Image
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-# Now you can import from the 'yolo' module
 from yolo.yolo import classify
 
 
