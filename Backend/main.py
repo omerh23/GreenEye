@@ -4,7 +4,12 @@ import uvicorn
 import numpy as np
 from io import BytesIO
 from PIL import Image
-from yolo import yolo
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+# Now you can import from the 'yolo' module
+from yolo.yolo import classify
+
 
 app = FastAPI()
 
@@ -42,7 +47,7 @@ async def predict(file: UploadFile = File(...)):
         }
 
     image = read_file_as_image(await file.read())
-    predTuple = yolo.classify(image)
+    predTuple = classify(image)
 
     return {
         'class': predTuple[0],

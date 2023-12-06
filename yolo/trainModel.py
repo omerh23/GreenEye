@@ -1,4 +1,4 @@
-from ultralytics import YOLO
+from ultralyticsplus import YOLO
 
 # Load a model
 model = YOLO("yolov8n.yaml")  # build a new model from scratch
