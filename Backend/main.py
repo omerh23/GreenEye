@@ -6,9 +6,9 @@ from io import BytesIO
 from PIL import Image
 import sys
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from yolo.yolo import classify
-
 
 app = FastAPI()
 
@@ -31,6 +31,11 @@ async def ping():
     return "Hello, I am alive"
 
 
+@app.get("/")
+async def run():
+    return "Server Running"
+
+
 def read_file_as_image(data) -> np.ndarray:
     image = np.array(Image.open(BytesIO(data)))
     return image
@@ -38,7 +43,6 @@ def read_file_as_image(data) -> np.ndarray:
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
-
     if not file.filename.lower().endswith((".jpg", ".jpeg")):
         return {
             'class': "Error, support only JPG images",
@@ -53,6 +57,6 @@ async def predict(file: UploadFile = File(...)):
         'confidence': float(predTuple[1])
     }
 
+
 if __name__ == "__main__":
     uvicorn.run(app, host='0.0.0.0', port=8000)
-
