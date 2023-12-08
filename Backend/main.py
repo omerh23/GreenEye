@@ -15,7 +15,8 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "https://greeneye-front.onrender.com/",
+    "https://greeneye-frontend.onrender.com",
+
 ]
 
 app.add_middleware(
