@@ -150,6 +150,7 @@ export const ImageUpload = () => {
   const [data, setData] = useState();
   const [image, setImage] = useState(false);
   const [isLoading, setIsloading] = useState(false);
+  const apiUrl = process.env.REACT_APP_API_URL;
   let confidence = 0;
 
   const sendFile = async () => {
@@ -158,7 +159,7 @@ export const ImageUpload = () => {
       formData.append("file", selectedFile);
       let res = await axios({
         method: "post",
-        url: process.env.REACT_APP_API_URL,
+        url: 'https://greeneyeserver.onrender.com/predict', // Update this URL
         data: formData,
       });
       if (res.status === 200) {
