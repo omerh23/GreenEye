@@ -153,6 +153,7 @@ export const ImageUpload = () => {
   const apiUrl = process.env.REACT_APP_API_URL;
   let confidence = 0;
 
+
   const sendFile = async () => {
     if (image) {
       let formData = new FormData();
