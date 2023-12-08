@@ -15,6 +15,7 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    "https://greeneye-front.onrender.com/",
 ]
 
 app.add_middleware(
@@ -58,5 +59,10 @@ async def predict(file: UploadFile = File(...)):
     }
 
 
+# run on Render server
+# if __name__ == "__main__":
+#     uvicorn.run(app, host='0.0.0.0', port=8000)
+
+# run on localhost
 if __name__ == "__main__":
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='localhost', port=8000)
