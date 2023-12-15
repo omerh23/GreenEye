@@ -59,6 +59,12 @@ async def predict(file: UploadFile = File(...)):
         'confidence': float(predTuple[1])
     }
 
+@app.post("/login")
+async def login_validation(data: dict):
+    name = data.get("username", "")
+    if name == 'omer':
+        return 'good'
+
 
 # run on Render server
 # if __name__ == "__main__":
