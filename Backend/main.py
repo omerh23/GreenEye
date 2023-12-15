@@ -60,16 +60,20 @@ async def predict(file: UploadFile = File(...)):
     }
 
 @app.post("/login")
-async def login_validation(data: dict):
-    name = data.get("username", "")
-    if name == 'omer':
-        return 'good'
+async def login_validation():
+    # Your login logic here
+    is_login_successful = True  # Replace this with your actual login validation logic
+
+    if is_login_successful:
+        return {"status": "success", "message": "Login successful"}
+    else:
+        return {"status": "error", "message": "Login failed"}
 
 
 # run on Render server
-# if __name__ == "__main__":
-#     uvicorn.run(app, host='0.0.0.0', port=8000)
+if __name__ == "__main__":
+    uvicorn.run(app, host='0.0.0.0', port=8000)
 
 # run on localhost
-if __name__ == "__main__":
-    uvicorn.run(app, host='localhost', port=8000)
+# if __name__ == "__main__":
+#     uvicorn.run(app, host='localhost', port=8000)
