@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ImageBackground,
   View,
@@ -8,10 +8,47 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-const Login = () => {
-  const [username, setUserName] = useState('');
-  const [password, setPassword] = useState('');
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigation = useNavigation();
+  const [detailMessage,setDetailMessage] = useState('');
+
+
+  const handleSignIn = async () => {
+    try {
+      const res = await axios.post('http://10.0.2.2:8000/login',{email,password});
+      if (res.data.status === 'empty_fields') {
+        setDetailMessage('All fields must be filled');
+      }
+      else if (res.data.status === 'success') {
+        console.log('Login success');
+        setDetailMessage('Login success..')
+        navigation.navigate('Home');
+      }
+
+      else if (res.data.status === 'incorrect_details') {
+        setDetailMessage('incorrect details')
+      }
+
+
+      else {
+        // Handle other cases if needed
+        setDetailMessage('Login failed..')
+        console.log('Login failed: ', res.data.message);
+      }
+    } catch (error) {
+      // Handle error, e.g., network issues, server not reachable
+      console.error('Error during login:', error);
+    }
+  };
+  const navigateToRegister = () => {
+    navigation.navigate('Register');
+  };
+  // @ts-ignore
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -23,12 +60,12 @@ const Login = () => {
 
       <View style={styles.form}>
         <Text style={styles.loginheader}>Login</Text>
-        <Text style={styles.label}>UserName:</Text>
+        <Text style={styles.label}>Email:</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter your username"
-          value={username}
-          onChangeText={setUserName}
+          value={email}
+          onChangeText={setEmail}
         />
         <Text style={styles.label}>Password:</Text>
         <TextInput
@@ -38,16 +75,22 @@ const Login = () => {
           value={password}
           onChangeText={setPassword}
         />
-        <TouchableOpacity style={styles.loginbutton}>
+        <TouchableOpacity style={styles.loginbutton} onPress={handleSignIn}>
           <Text style={styles.buttonText1}>Signin</Text>
         </TouchableOpacity>
-        <Text>Not a user? click here</Text>
+        <Text style={styles.details} >{detailMessage} </Text>
+        <View style={styles.rowContainer}>
+          <Text>Not a user?</Text>
+          <TouchableOpacity onPress={navigateToRegister}>
+            <Text style={styles.click}> Click here</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -114,6 +157,21 @@ const styles = StyleSheet.create({
     fontSize: 16, // Set the font size
     fontWeight: 'bold', // Set the font weight
   },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  click:{
+    color:'#2a7312',
+  },
+  details: {
+    textAlign: 'center',
+
+
+  },
+
 });
 
 export default Login;

@@ -6,11 +6,19 @@ from io import BytesIO
 from PIL import Image
 import sys
 from pathlib import Path
+from pymongo import MongoClient
+import re
+import bcrypt
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from yolo.yolo import classify
 
 app = FastAPI()
+
+# Connect to MongoDB
+cluster = MongoClient("mongodb+srv://guy1179:GreenEye7070@greeneye.ia5rjyn.mongodb.net/?retryWrites=true&w=majority")
+db = cluster["GreenEye"]
+collection = db["users"]
 
 origins = [
     "http://localhost",
@@ -59,15 +67,61 @@ async def predict(file: UploadFile = File(...)):
         'confidence': float(predTuple[1])
     }
 
-@app.post("/login")
-async def login_validation():
-    # Your login logic here
-    is_login_successful = True  # Replace this with your actual login validation logic
 
-    if is_login_successful:
-        return {"status": "success", "message": "Login successful"}
+import bcrypt
+
+# ...
+
+@app.post("/login")
+async def login_validation(data: dict):
+    # Check for empty fields
+    if not all(data.values()):
+        return {"status": "empty_fields"}
+
+    # Retrieve user from the database based on the provided email
+    existing_user = collection.find_one({"email": data['email']})
+
+    if existing_user:
+        # Hash the provided password for comparison
+        hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), existing_user['password'].encode('utf-8'))
+
+        if bcrypt.checkpw(data['password'].encode('utf-8'), existing_user['password'].encode('utf-8')):
+            return {"status": "success"}
+        else:
+            return {"status": "incorrect_password"}
     else:
-        return {"status": "error", "message": "Login failed"}
+        return {"status": "user_not_found"}
+
+
+
+
+@app.post("/register")
+async def register_validation(data: dict):
+    if not all(data.values()):
+        return {"status": "empty_fields"}
+
+    if len(data['password']) < 6:
+        return {"status": "short_password"}
+
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    if not re.match(email_regex, data['email']):
+        return {"status": "invalid_email"}
+
+    existing_user = collection.find_one({"email": data['email']})
+    if existing_user:
+        return {"status": "email_already_registered"}
+
+    if data['password'] != data['confirmPassword']:
+        return {"status": "mismatch"}
+
+    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+    collection.insert_one({
+        "username": data['username'],
+        "email": data['email'],
+        "password": hashed_password.decode('utf-8')
+    })
+
+    return {"status": "success"}
 
 
 # run on Render server
