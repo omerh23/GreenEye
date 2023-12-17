@@ -28,6 +28,7 @@ const Login = () => {
         console.log('Login success');
         setDetailMessage('Login success..')
         navigation.navigate('Home');
+        setDetailMessage('')
       }
 
       else if (res.data.status === 'incorrect_details') {
@@ -47,6 +48,7 @@ const Login = () => {
   };
   const navigateToRegister = () => {
     navigation.navigate('Register');
+    setDetailMessage('')
   };
   // @ts-ignore
   return (

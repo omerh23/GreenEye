@@ -21,6 +21,7 @@ const Register = () => {
 
     const navigateToLogin = () => {
         navigation.navigate('Login');
+        setDetailMessage('')
     };
 
     const handleRegister = async () => {

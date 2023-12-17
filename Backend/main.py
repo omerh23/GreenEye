@@ -87,10 +87,8 @@ async def login_validation(data: dict):
 
         if bcrypt.checkpw(data['password'].encode('utf-8'), existing_user['password'].encode('utf-8')):
             return {"status": "success"}
-        else:
-            return {"status": "incorrect_password"}
-    else:
-        return {"status": "user_not_found"}
+
+    return {"status": "incorrect_details"}
 
 
 
