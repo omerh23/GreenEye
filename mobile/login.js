@@ -16,7 +16,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
   const [detailMessage,setDetailMessage] = useState('');
-
+  const [user,setUser] = useState();
 
   const handleSignIn = async () => {
     try {
@@ -25,9 +25,12 @@ const Login = () => {
         setDetailMessage('All fields must be filled');
       }
       else if (res.data.status === 'success') {
-        console.log('Login success');
         setDetailMessage('Login success..')
-        navigation.navigate('Home');
+        setUser(res.data.user)
+        console.log('user details: ', user)
+        setTimeout(() => {
+          navigation.navigate('Home', { user });
+        }, 0);
         setDetailMessage('')
       }
 
@@ -46,6 +49,7 @@ const Login = () => {
       console.error('Error during login:', error);
     }
   };
+
   const navigateToRegister = () => {
     navigation.navigate('Register');
     setDetailMessage('')

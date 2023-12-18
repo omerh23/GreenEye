@@ -7,15 +7,19 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-
+import {useNavigation} from "@react-navigation/native";
 const Button = ({text}) => (
   <TouchableOpacity style={styles.button}>
     <Text style={styles.buttonText}>{text}</Text>
   </TouchableOpacity>
 );
 
-const HomePage = () => {
-  const [name, setName] = useState('Omer Halfon');
+const HomePage = ({ route }) => {
+  console.log("route:",route.params)
+  const { user } = route.params || { user: null };
+  const username = user ? user.username : 'NULL';
+  console.log('username: ',username)
+  const navigation = useNavigation();
   const buttonsData = [
     'Button ',
     'Button ',
@@ -32,7 +36,9 @@ const HomePage = () => {
     ));
   };
 
-  function handleLogout() {}
+  function handleLogout() {
+    navigation.navigate('Login');
+  }
 
   return (
     <View style={styles.container}>
@@ -44,9 +50,9 @@ const HomePage = () => {
 
       <Image source={require('./gelogo.png')} style={styles.logo} />
       <View style={styles.userName}>
-        <Text>Welcome, {name}!</Text>
+        <Text>Welcome, {username} !</Text>
       </View>
-      <TouchableOpacity style={styles.logoutButton}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text>Logout</Text>
       </TouchableOpacity>
 
