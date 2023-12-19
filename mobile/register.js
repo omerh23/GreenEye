@@ -9,6 +9,9 @@ import {
 import {useNavigation} from "@react-navigation/native";
 import {styles} from "./login";
 import axios from "axios";
+import Modal from 'react-native-modal'; // Import the modal component
+
+
 const Register = () => {
     const [username, setUserName] = useState('');
     const [email, setEmail] = useState('');
@@ -16,8 +19,11 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [detailMessage,setDetailMessage] = useState('');
     const navigation = useNavigation();
+    const [emailBorder, setEmailBorder] = useState('#2a7312');
+    const [passwordBorder, setPasswordBorder] = useState('#2a7312');
+    const [isSuccessModalVisible, setSuccessModalVisible] = useState(false); // State to control the visibility of the success modal
 
-    // Add your registration logic here
+
 
     const navigateToLogin = () => {
         navigation.navigate('Login');
@@ -26,22 +32,40 @@ const Register = () => {
 
     const handleRegister = async () => {
         try {
+            setEmailBorder('#2a7312')
+            setPasswordBorder('#2a7312')
+
             const res = await axios.post('http://10.0.2.2:8000/register', { password, confirmPassword, username, email });
             console.log(res.data.status);
 
             if (res.data.status === 'success') {
+                setDetailMessage('')
+                setSuccessModalVisible(true); // Show the success modal
                 console.log('Register success');
-                setDetailMessage('Register success');
-                navigation.navigate('Login');
-            } else if (res.data.status === 'mismatch') {
-                setDetailMessage('The passwords do not match');
-            } else if (res.data.status === 'short_password') {
-                setDetailMessage('Short password (min 6 chars)');
-            } else if (res.data.status === 'invalid_email') {
+                //navigation.navigate('Login');
+            }
+
+            else if (res.data.status === 'invalid_email') {
+                setEmailBorder('red')
                 setDetailMessage('Invalid email format');
-            } else if (res.data.status === 'email_already_registered') {
+            }
+
+            else if (res.data.status === 'email_already_registered') {
+                setEmailBorder('red')
                 setDetailMessage('Email is already registered');
-            } else if (res.data.status === 'empty_fields') {
+            }
+
+            else if (res.data.status === 'mismatch') {
+                setPasswordBorder('red')
+                setDetailMessage('The passwords do not match');
+            }
+
+            else if (res.data.status === 'short_password') {
+                setPasswordBorder('red')
+                setDetailMessage('Short password (min 6 chars)');
+            }
+
+            else if (res.data.status === 'empty_fields') {
                 setDetailMessage('All fields must be filled');
             } else {
                 // Handle other cases if needed
@@ -76,14 +100,14 @@ const Register = () => {
                 />
                 <Text style={styles.label}>Email:</Text>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { borderColor: emailBorder}]}
                     placeholder="Enter your Email"
                     value={email}
                     onChangeText={setEmail}
                 />
                 <Text style={styles.label}>Password:</Text>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { borderColor: passwordBorder}]}
                     placeholder="Enter your password"
                     secureTextEntry
                     value={password}
@@ -91,7 +115,7 @@ const Register = () => {
                 />
                 <Text style={styles.label}>Confirm Password:</Text>
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { borderColor: passwordBorder}]}
                     placeholder="Enter your password"
                     secureTextEntry
                     value={confirmPassword}
@@ -111,9 +135,19 @@ const Register = () => {
                 </View>
 
             </View>
+            <Modal visible={isSuccessModalVisible} style={styles.modal}>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.modalText}>Registration Successful!</Text>
+                    <TouchableOpacity style={styles.modalButton} onPress={navigateToLogin}>
+                        <Text style={styles.modalButtonText}>Let's login</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+
         </View>
     );
 };
+
 
 
 export default Register;

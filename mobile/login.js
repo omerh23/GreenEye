@@ -11,13 +11,14 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
   const [detailMessage,setDetailMessage] = useState('');
   const [user,setUser] = useState();
-
+  const [approveMessage,setApproveMessage] = useState('');
   const handleSignIn = async () => {
     try {
       const res = await axios.post('http://10.0.2.2:8000/login',{email,password});
@@ -25,13 +26,12 @@ const Login = () => {
         setDetailMessage('All fields must be filled');
       }
       else if (res.data.status === 'success') {
-        setDetailMessage('Login success..')
-        setUser(res.data.user)
-        console.log('user details: ', user)
-        setTimeout(() => {
-          navigation.navigate('Home', { user });
-        }, 0);
         setDetailMessage('')
+        setApproveMessage('Login success..')
+        setUser(res.data.user)
+        console.log('user details', user)
+        setDetailMessage('')
+        setApproveMessage('')
       }
 
       else if (res.data.status === 'incorrect_details') {
@@ -49,6 +49,12 @@ const Login = () => {
       console.error('Error during login:', error);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      navigation.navigate('Home', { user });
+    }
+  }, [user]);
 
   const navigateToRegister = () => {
     navigation.navigate('Register');
@@ -85,6 +91,7 @@ const Login = () => {
           <Text style={styles.buttonText1}>Signin</Text>
         </TouchableOpacity>
         <Text style={styles.details} >{detailMessage} </Text>
+        <Text style={{textAlign: 'center'}} > {approveMessage} </Text>
         <View style={styles.rowContainer}>
           <Text>Not a user?</Text>
           <TouchableOpacity onPress={navigateToRegister}>
@@ -174,8 +181,34 @@ export const styles = StyleSheet.create({
   },
   details: {
     textAlign: 'center',
+    color: 'red',
 
-
+  },
+  modal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center', // Center content horizontally
+  },
+  modalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: '#2a7312',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 
 });

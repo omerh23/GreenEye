@@ -15,8 +15,7 @@ const Button = ({text}) => (
 );
 
 const HomePage = ({ route }) => {
-  console.log("route:",route.params)
-  const { user } = route.params || { user: null };
+  const [user, setUser] = useState(route.params?.user || null);
   const username = user ? user.username : 'NULL';
   console.log('username: ',username)
   const navigation = useNavigation();
@@ -37,8 +36,10 @@ const HomePage = ({ route }) => {
   };
 
   function handleLogout() {
+    setUser(null);
     navigation.navigate('Login');
   }
+
 
   return (
     <View style={styles.container}>
