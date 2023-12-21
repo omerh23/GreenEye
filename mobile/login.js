@@ -21,7 +21,10 @@ const Login = () => {
   const [approveMessage,setApproveMessage] = useState('');
   const handleSignIn = async () => {
     try {
+      setDetailMessage('')
+      setApproveMessage('Loading please wait')
       const res = await axios.post('http://10.0.2.2:8000/login',{email,password});
+      setApproveMessage('')
       if (res.data.status === 'empty_fields') {
         setDetailMessage('All fields must be filled');
       }

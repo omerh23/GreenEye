@@ -8,11 +8,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
-const Button = ({text}) => (
-  <TouchableOpacity style={styles.button}>
-    <Text style={styles.buttonText}>{text}</Text>
-  </TouchableOpacity>
+import PushNotification from "react-native-push-notification";
+const Button = ({text, onPress}) => (
+    <TouchableOpacity style={styles.button} onPress={onPress}>
+      <Text style={styles.buttonText}>{text}</Text>
+    </TouchableOpacity>
 );
+
 
 const HomePage = ({ route }) => {
   const [user, setUser] = useState(route.params?.user || null);
@@ -28,10 +30,23 @@ const HomePage = ({ route }) => {
     'Button ',
   ];
 
+  const sendNotification = (buttonIndex) => {
+    PushNotification.localNotification({
+      channelId: "1",
+      title: "Button Pressed",
+      message: `Button ${buttonIndex} was pressed!`,
+      playSound: true,
+      soundName: 'default',
+    });
+  };
+
   const renderButtons = () => {
-    // @ts-ignore
     return buttonsData.map((buttonText, index) => (
-      <Button key={index} text={`${buttonText} ${index + 1}`} />
+        <Button
+            key={index}
+            text={`${buttonText} ${index + 1}`}
+            onPress={() => sendNotification(index + 1)}
+        />
     ));
   };
 
@@ -56,10 +71,9 @@ const HomePage = ({ route }) => {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text>Logout</Text>
       </TouchableOpacity>
-
-      {/* Square-shaped Buttons */}
       <View style={styles.buttonContainer}>{renderButtons()}</View>
     </View>
+
   );
 };
 

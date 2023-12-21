@@ -6,7 +6,7 @@ import os
 def classify(image_to_classify):
     # load model
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_directory, 'runs/detect/train/weights/best.pt')
+    model_path = os.path.join(script_directory, 'runs/detect/train/weights/best2.pt')
     model = YOLO(model_path)
 
     predictDic = {"Potato_healthy": (0, 0),
