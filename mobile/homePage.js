@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import PushNotification from "react-native-push-notification";
+import Sidebar from "./Sidebar";
 const Button = ({text, onPress}) => (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text style={styles.buttonText}>{text}</Text>
@@ -19,6 +20,8 @@ const Button = ({text, onPress}) => (
 const HomePage = ({ route }) => {
   const [user, setUser] = useState(route.params?.user || null);
   const username = user ? user.username : 'NULL';
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+
   console.log('username: ',username)
   const navigation = useNavigation();
   const buttonsData = [
@@ -54,7 +57,9 @@ const HomePage = ({ route }) => {
     setUser(null);
     navigation.navigate('Login');
   }
-
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+  };
 
   return (
     <View style={styles.container}>
@@ -68,9 +73,27 @@ const HomePage = ({ route }) => {
       <View style={styles.userName}>
         <Text>Welcome, {username} !</Text>
       </View>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text>Logout</Text>
+      {/*<TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>*/}
+      {/*  <Text>Logout</Text>*/}
+      {/*</TouchableOpacity>*/}
+      <Sidebar
+          isVisible={sidebarVisible}
+          onClose={() => setSidebarVisible(false)}
+          Logout={handleLogout}
+
+      />
+      <TouchableOpacity
+          style={styles.logoutButton}
+
+          onPress={toggleSidebar}
+      >
+        <Image
+            source={require('./sidebarIcon.png')}
+            style={styles.toggleButtonImage}
+        />
       </TouchableOpacity>
+
+
       <View style={styles.buttonContainer}>{renderButtons()}</View>
     </View>
 
@@ -134,6 +157,12 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     color: '#000',
+  },
+  toggleButtonImage: {
+    // styles for your image button
+    width: 30,
+    height: 30,
+    resizeMode: 'contain', // Adjust the image content mode as needed
   },
 });
 
