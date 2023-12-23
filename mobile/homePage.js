@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ImageBackground,
   View,
@@ -22,7 +22,10 @@ const HomePage = ({ route }) => {
   const username = user ? user.username : 'NULL';
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
-  console.log('username: ',username)
+  useEffect( () => {
+    console.log('username: ',username)
+  },[]);
+
   const navigation = useNavigation();
   const buttonsData = [
     'Button ',
@@ -34,13 +37,18 @@ const HomePage = ({ route }) => {
   ];
 
   const sendNotification = (buttonIndex) => {
-    PushNotification.localNotification({
-      channelId: "1",
-      title: "Button Pressed",
-      message: `Button ${buttonIndex} was pressed!`,
-      playSound: true,
-      soundName: 'default',
-    });
+    if (sidebarVisible){
+      setSidebarVisible(false)
+    }
+    else{
+      PushNotification.localNotification({
+        channelId: "1",
+        title: "Button Pressed",
+        message: `Button ${buttonIndex} was pressed!`,
+        playSound: true,
+        soundName: 'default',
+      }   );
+    }
   };
 
   const renderButtons = () => {
@@ -64,18 +72,16 @@ const HomePage = ({ route }) => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('./2b.jpg')}
+        source={require('./images/2b.jpg')}
         style={styles.backgroundImage}
         resizeMode="cover"
       />
 
-      <Image source={require('./gelogo.png')} style={styles.logo} />
+      <Image source={require('./images/gelogo.png')} style={styles.logo} />
       <View style={styles.userName}>
         <Text>Welcome, {username} !</Text>
       </View>
-      {/*<TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>*/}
-      {/*  <Text>Logout</Text>*/}
-      {/*</TouchableOpacity>*/}
+
       <Sidebar
           isVisible={sidebarVisible}
           onClose={() => setSidebarVisible(false)}
@@ -88,7 +94,7 @@ const HomePage = ({ route }) => {
           onPress={toggleSidebar}
       >
         <Image
-            source={require('./sidebarIcon.png')}
+            source={require('./images/sidebarIcon.png')}
             style={styles.toggleButtonImage}
         />
       </TouchableOpacity>

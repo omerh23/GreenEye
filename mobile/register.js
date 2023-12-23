@@ -83,11 +83,11 @@ const Register = () => {
     return (
         <View style={styles.container}>
             <ImageBackground
-                source={require('./2b.jpg')}
+                source={require('./images/2b.jpg')}
                 style={styles.backgroundImage}
                 resizeMode="cover"
             />
-            <Image source={require('./gelogo.png')} style={styles.logo} />
+            <Image source={require('./images/gelogo.png')} style={styles.logo} />
 
             <View style={styles.form}>
                 <Text style={styles.loginheader}>Register</Text>
