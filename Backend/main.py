@@ -7,6 +7,10 @@ from pathlib import Path
 from pymongo import MongoClient
 from app import router as app_router
 from authentication import router as auth_router
+from cameraDetect import router as cam_router
+
+import cloudinary
+
 import os
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -17,9 +21,14 @@ app = FastAPI()
 
 cluster = MongoClient(mongodb_url)
 db = cluster["GreenEye"]
+userId = None
+
+def setUserId(uid):
+    userId = uid
 
 origins = [
     "http://localhost",
+    "http://127.0.0.1",
     "http://localhost:3000",
     "https://greeneye-frontend.onrender.com",
 
@@ -33,8 +42,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Set your Cloudinary configuration
+cloudImages = cloudinary.config(
+    cloud_name=os.getenv("CLOUD_NAME"),
+    api_key=os.getenv("API_KEY"),
+    api_secret=os.getenv("API_SECRET"),
+)
+
 app.include_router(auth_router)
 app.include_router(app_router)
+app.include_router(cam_router)
 
 
 
@@ -45,3 +62,4 @@ app.include_router(app_router)
 # run on localhost
 if __name__ == "__main__":
     uvicorn.run(app, host='localhost', port=8000)
+

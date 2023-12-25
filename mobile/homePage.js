@@ -10,16 +10,20 @@ import {
 import {useNavigation} from "@react-navigation/native";
 import PushNotification from "react-native-push-notification";
 import Sidebar from "./Sidebar";
-const Button = ({text, onPress}) => (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>{text}</Text>
-    </TouchableOpacity>
-);
+import axios from "axios";
+import HomeButtons from "./homeButtons";
+import LiveCameraScreen from "./liveCamera";
+// const Button = ({text, onPress}) => (
+//     <TouchableOpacity style={styles.button} onPress={onPress}>
+//       <Text style={styles.buttonText}>{text}</Text>
+//     </TouchableOpacity>
+// );
 
 
 const HomePage = ({ route }) => {
   const [user, setUser] = useState(route.params?.user || null);
   const username = user ? user.username : 'NULL';
+  const userId = user ? user._id : 'NULL';
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   useEffect( () => {
@@ -27,14 +31,14 @@ const HomePage = ({ route }) => {
   },[]);
 
   const navigation = useNavigation();
-  const buttonsData = [
-    'Button ',
-    'Button ',
-    'Button ',
-    'Button ',
-    'Button ',
-    'Button ',
-  ];
+  // const buttonsData = [
+  //   'LiveCamera',
+  //   'Button ',
+  //   'Button ',
+  //   'Button ',
+  //   'Button ',
+  //   'Button ',
+  // ];
 
   const sendNotification = (buttonIndex) => {
     if (sidebarVisible){
@@ -51,15 +55,28 @@ const HomePage = ({ route }) => {
     }
   };
 
-  const renderButtons = () => {
-    return buttonsData.map((buttonText, index) => (
-        <Button
-            key={index}
-            text={`${buttonText} ${index + 1}`}
-            onPress={() => sendNotification(index + 1)}
-        />
-    ));
-  };
+  function handleLiveCameraPress() {
+
+    axios.post('http://10.0.2.2:8000/liveCamera',user);
+  }
+
+  // const renderButtons = () => {
+  //   return buttonsData.map((buttonText, index) => (
+  //       <Button
+  //           key={index}
+  //           text={`${buttonText}`}
+  //           //onPress={() => sendNotification(index + 1)}
+  //           onPress={()=>{
+  //
+  //             if (buttonText === 'LiveCamera'){
+  //               handleLiveCameraPress();
+  //
+  //             }
+  //           }
+  //           }
+  //       />
+  //   ));
+  // };
 
   function handleLogout() {
     setUser(null);
@@ -100,7 +117,9 @@ const HomePage = ({ route }) => {
       </TouchableOpacity>
 
 
-      <View style={styles.buttonContainer}>{renderButtons()}</View>
+      <HomeButtons
+      Live = {() => navigation.navigate('LiveCamera', { user })}
+      />
     </View>
 
   );
@@ -126,28 +145,28 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     position: 'absolute',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    flexWrap: 'wrap', // Allow buttons to wrap to the next row
-    marginTop: 10, // Add some margin to separate rows
-    width: '80%',
-  },
-  button: {
-    marginVertical: 10,
-    width: '30%', // Adjust the width based on the number of buttons per row
-    height: 100,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-  },
+  // buttonContainer: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-around',
+  //   alignItems: 'center',
+  //   flexWrap: 'wrap', // Allow buttons to wrap to the next row
+  //   marginTop: 10, // Add some margin to separate rows
+  //   width: '80%',
+  // },
+  // button: {
+  //   marginVertical: 10,
+  //   width: '30%', // Adjust the width based on the number of buttons per row
+  //   height: 100,
+  //   backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  //   borderRadius: 10,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
+  // buttonText: {
+  //   fontSize: 16,
+  //   fontWeight: 'bold',
+  //   color: '#000',
+  // },
   userName: {
     position: 'absolute',
     top: 10, // Adjust the top position as needed

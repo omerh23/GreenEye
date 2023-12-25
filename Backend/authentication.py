@@ -49,7 +49,8 @@ async def register_validation(data: dict):
     collection.insert_one({
         "username": data['username'],
         "email": data['email'],
-        "password": hashed_password.decode('utf-8')
+        "password": hashed_password.decode('utf-8'),
+        "images": []
     })
 
     return {"status": "success"}
