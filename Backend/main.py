@@ -7,7 +7,6 @@ from pathlib import Path
 from pymongo import MongoClient
 from app import router as app_router
 from authentication import router as auth_router
-from cameraDetect import router as cam_router
 
 import cloudinary
 
@@ -51,7 +50,6 @@ cloudImages = cloudinary.config(
 
 app.include_router(auth_router)
 app.include_router(app_router)
-app.include_router(cam_router)
 
 
 
