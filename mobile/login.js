@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Login = () => {
@@ -31,8 +32,11 @@ const Login = () => {
       else if (res.data.status === 'success') {
         setDetailMessage('')
         setApproveMessage('Login success..')
+        const token = res.data.token;
+        console.log('token: ', token)
+        await AsyncStorage.setItem('token', token);
         setUser(res.data.user)
-        console.log('user details', user)
+        //console.log('user details', user)
         setDetailMessage('')
         setApproveMessage('')
       }
