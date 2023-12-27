@@ -1,32 +1,32 @@
 // Sidebar.js
-import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import React from "react";
 import { Icon } from 'react-native-elements'
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
-const HomeButtons = ({Live}) => {
+const HomeButtons = ({Live, History}) => {
 
     return (
         <View style={styles.buttonContainer1}>
             <TouchableOpacity style={styles.button1} onPress={Live}>
                 <FontAwesomeIcon name="video-camera" size={35} color="black" />
-                <Text style={styles.buttonText1}>Live</Text>
+                <Text style={styles.buttonTextt}>Live</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button1} onPress={History}>
+                <FontAwesomeIcon name="file-text" size={35} color="black" />
+                <Text style={styles.buttonTextt}>History</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button1}>
                 {/*<EntypoIcon name="login" size={35} color="black" />*/}
-                <Text style={styles.buttonText1}>Button 2</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button1}>
-                {/*<EntypoIcon name="login" size={35} color="black" />*/}
-                <Text style={styles.buttonText1}>Button 3</Text>
+                <Text style={styles.buttonTextt}>Button 3</Text>
             </TouchableOpacity>
         </View>
     );
 };
 
  const styles = StyleSheet.create({
-     buttonText1: {
+     buttonTextt: {
          fontSize: 16,
          fontWeight: 'bold',
          color: '#000',

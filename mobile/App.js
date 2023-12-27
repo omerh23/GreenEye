@@ -5,6 +5,7 @@ import Login from './login';
 import HomePage from "./homePage";
 import Register from "./register";
 import LiveCameraScreen from "./liveCamera";
+import Histroy from "./history";
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
                 <Stack.Screen name="Home" component={HomePage} />
                 <Stack.Screen name="Register" component={Register} />
                 <Stack.Screen name="LiveCamera" component={LiveCameraScreen} />
+                <Stack.Screen name="History" component={Histroy} />
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -23,7 +23,6 @@ import LiveCameraScreen from "./liveCamera";
 const HomePage = ({ route }) => {
   const [user, setUser] = useState(route.params?.user || null);
   const username = user ? user.username : 'NULL';
-  const userId = user ? user._id : 'NULL';
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   useEffect( () => {
@@ -55,9 +54,10 @@ const HomePage = ({ route }) => {
     }
   };
 
-  function handleLiveCameraPress() {
+  async function handleHistory() {
+    //const res = await axios.post('http://10.0.2.2:8000/login',{user});
 
-    axios.post('http://10.0.2.2:8000/liveCamera',user);
+    navigation.navigate('History', {user});
   }
 
   // const renderButtons = () => {
@@ -119,6 +119,8 @@ const HomePage = ({ route }) => {
 
       <HomeButtons
       Live = {() => navigation.navigate('LiveCamera', { user })}
+      History = {handleHistory}
+
       />
     </View>
 
