@@ -20,12 +20,18 @@ const Login = () => {
   const [detailMessage,setDetailMessage] = useState('');
   const [user,setUser] = useState();
   const [approveMessage,setApproveMessage] = useState('');
+
+
   const handleSignIn = async () => {
     try {
       setDetailMessage('')
-      setApproveMessage('Loading please wait')
-      const res = await axios.post('http://10.0.2.2:8000/login',{email,password});
+      setApproveMessage('Loading please wait..')
+      const res = await axios.post('http://10.0.2.2:8000/login', { email, password }, {
+        timeout: 10000
+      });
+
       setApproveMessage('')
+
       if (res.data.status === 'empty_fields') {
         setDetailMessage('All fields must be filled');
       }
@@ -36,7 +42,6 @@ const Login = () => {
         console.log('token: ', token)
         await AsyncStorage.setItem('token', token);
         setUser(res.data.user)
-        //console.log('user details', user)
         setDetailMessage('')
         setApproveMessage('')
       }
@@ -52,8 +57,13 @@ const Login = () => {
         console.log('Login failed: ', res.data.message);
       }
     } catch (error) {
-      // Handle error, e.g., network issues, server not reachable
-      console.error('Error during login:', error);
+      if (error.message === 'Network Error') {
+        //console.error('Request timed out. Please try again.');
+        setDetailMessage('No response from server');
+        setApproveMessage('');
+      } else {
+        console.error('Error:', error.message);
+      }
     }
   };
 
