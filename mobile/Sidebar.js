@@ -1,50 +1,64 @@
 // Sidebar.js
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
-import React from "react";
+import React, {useState} from "react";
 import { Icon } from 'react-native-elements'
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 
-const Sidebar = ({ isVisible, onClose,Logout }) => {
-    if (!isVisible) return null;
+const Sidebar = () => {
+    const [buttonPressed, setButtonPressed] = useState(false);
+
+    function toggleSidebar() {
+        setButtonPressed(!buttonPressed);
+    }
 
     return (
         <View style={styles.container}>
-            {/*<TouchableOpacity style={styles.closeButton} onPress={onClose}>*/}
-            {/*    <EntypoIcon name="cross" size={30} color="black" />*/}
-            {/*</TouchableOpacity>*/}
 
-        <View style={styles.sidebarbuttons}>
-            <TouchableOpacity style={styles.sidebarbuttons} onPress={Logout}>
-                <EntypoIcon name="login" size={35} color="black" />
-                <Text>Logout</Text>
-            </TouchableOpacity>
+            <View style={styles.mainbutton}>
+                <TouchableOpacity  onPress={toggleSidebar}>
+                    <EntypoIcon name="list" size={35} color="black" />
 
-            <TouchableOpacity style={styles.sidebarbuttons} onPress={Logout}>
-                <EntypoIcon name="book" size={35} color="black" />
-                <Text>Guide</Text>
-            </TouchableOpacity>
+                </TouchableOpacity>
+            </View>
 
-            <TouchableOpacity style={styles.sidebarbuttons} onPress={Logout}>
-                <EntypoIcon name="cog" size={35} color="black" />
-                <Text>Setting</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sidebarbuttons} onPress={Logout}>
-                <EntypoIcon name="layers" size={35} color="black" />
-                <Text>T&P</Text>
-            </TouchableOpacity>
+            {buttonPressed && (
+                <View style={styles.containButtons}>
 
-            <TouchableOpacity style={styles.sidebarbuttons} onPress={Logout}>
-                <EntypoIcon name="megaphone" size={35} color="black" />
-                <Text>Feedback</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.sidebarbuttons} >
+                        <EntypoIcon name="login" size={35} color="black" />
+                        <Text>Logout</Text>
+                    </TouchableOpacity>
 
-            <TouchableOpacity style={styles.sidebarbuttons} onPress={Logout}>
-                <EntypoIcon name="slideshare" size={35} color="black" />
-                <Text>About us</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.sidebarbuttons} >
+                        <EntypoIcon name="book" size={35} color="black" />
+                        <Text>Guide</Text>
+                    </TouchableOpacity>
 
-        </View>
+                    <TouchableOpacity style={styles.sidebarbuttons} >
+                        <EntypoIcon name="cog" size={35} color="black" />
+                        <Text>Setting</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.sidebarbuttons} >
+                        <EntypoIcon name="layers" size={35} color="black" />
+                        <Text>T&P</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.sidebarbuttons} >
+                        <EntypoIcon name="megaphone" size={35} color="black" />
+                        <Text>Feedback</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.sidebarbuttons} >
+                        <EntypoIcon name="slideshare" size={35} color="black" />
+                        <Text>About us</Text>
+                    </TouchableOpacity>
+
+                </View>
+
+            )}
+
 
         </View>
     );
@@ -53,22 +67,29 @@ const Sidebar = ({ isVisible, onClose,Logout }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 22,
-        position: 'absolute',
-        right: 0,
-        top: 80,
-        //bottom: 450,
-        width: 105,
-        zIndex: 1000,
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-        borderRadius: 10,
-        alignItems: 'center',
-
     },
     closeButton: {
         bottom: 0,
     },
 
+    containButtons: {
+        padding: 15,
+        position: 'absolute',
+        right: -5,
+        top: 60,
+        width: 100,
+        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    mainbutton: {
+        position: 'absolute',
+        top: 15, // Adjust the top position as needed
+        right: 0, // Adjust the right position as needed
+        fontSize: 25,
+        fontWeight: 'bold',
+        color: '#000',
+    },
     sidebarbuttons: {
         marginBottom: 20,
         alignItems: 'center',

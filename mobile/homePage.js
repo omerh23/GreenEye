@@ -30,14 +30,7 @@ const HomePage = ({ route }) => {
   },[]);
 
   const navigation = useNavigation();
-  // const buttonsData = [
-  //   'LiveCamera',
-  //   'Button ',
-  //   'Button ',
-  //   'Button ',
-  //   'Button ',
-  //   'Button ',
-  // ];
+
 
   const sendNotification = (buttonIndex) => {
     if (sidebarVisible){
@@ -55,28 +48,11 @@ const HomePage = ({ route }) => {
   };
 
   async function handleHistory() {
-    //const res = await axios.post('http://10.0.2.2:8000/login',{user});
 
     navigation.navigate('History', {user});
   }
 
-  // const renderButtons = () => {
-  //   return buttonsData.map((buttonText, index) => (
-  //       <Button
-  //           key={index}
-  //           text={`${buttonText}`}
-  //           //onPress={() => sendNotification(index + 1)}
-  //           onPress={()=>{
-  //
-  //             if (buttonText === 'LiveCamera'){
-  //               handleLiveCameraPress();
-  //
-  //             }
-  //           }
-  //           }
-  //       />
-  //   ));
-  // };
+
 
   function handleLogout() {
     setUser(null);
@@ -87,42 +63,28 @@ const HomePage = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require('./images/2b.jpg')}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      />
-
-      <Image source={require('./images/gelogo.png')} style={styles.logo} />
-      <View style={styles.userName}>
-        <Text>Welcome, {username} !</Text>
-      </View>
-
-      <Sidebar
-          isVisible={sidebarVisible}
-          onClose={() => setSidebarVisible(false)}
-          Logout={handleLogout}
-
-      />
-      <TouchableOpacity
-          style={styles.logoutButton}
-
-          onPress={toggleSidebar}
-      >
-        <Image
-            source={require('./images/sidebarIcon.png')}
-            style={styles.toggleButtonImage}
+      <View style={styles.container}>
+        <ImageBackground
+            source={require('./images/2b.jpg')}
+            style={styles.backgroundImage}
+            resizeMode="cover"
         />
-      </TouchableOpacity>
+
+        <Image source={require('./images/gelogo.png')} style={styles.logo} />
+        <View style={styles.userName}>
+          <Text>Welcome, {username} !</Text>
+          <Sidebar/>
+
+        </View>
+
+        <HomeButtons
+                Live = {() => navigation.navigate('LiveCamera', { user })}
+                History = {handleHistory}
+
+        />
 
 
-      <HomeButtons
-      Live = {() => navigation.navigate('LiveCamera', { user })}
-      History = {handleHistory}
-
-      />
-    </View>
+      </View>
 
   );
 };
@@ -176,6 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     color: '#000',
+    zIndex:1,
   },
   logoutButton: {
     position: 'absolute',
@@ -191,6 +154,21 @@ const styles = StyleSheet.create({
     height: 30,
     resizeMode: 'contain', // Adjust the image content mode as needed
   },
+  sidebar: {
+    flex: 1,
+    padding: 22,
+    position: 'absolute',
+    right: 0,
+    top: 80,
+    //bottom: 450,
+    width: 105,
+    zIndex: 1000,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 10,
+    alignItems: 'center',
+
+  },
+
 });
 
 export default HomePage;
