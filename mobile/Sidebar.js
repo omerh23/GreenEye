@@ -3,12 +3,24 @@ import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import React, {useState} from "react";
 import { Icon } from 'react-native-elements'
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import {useNavigation} from "@react-navigation/native";
 
 const Sidebar = () => {
     const [buttonPressed, setButtonPressed] = useState(false);
+    const navigation = useNavigation();
 
     function toggleSidebar() {
         setButtonPressed(!buttonPressed);
+    }
+
+    function HandleLogout() {
+        navigation.navigate('Login');
+
+    }
+
+    function HandleHome() {
+        navigation.navigate('Home');
+
     }
 
     return (
@@ -25,7 +37,7 @@ const Sidebar = () => {
             {buttonPressed && (
                 <View style={styles.containButtons}>
 
-                    <TouchableOpacity style={styles.sidebarbuttons} >
+                    <TouchableOpacity style={styles.sidebarbuttons} onPress={HandleLogout} >
                         <EntypoIcon name="login" size={35} color="black" />
                         <Text>Logout</Text>
                     </TouchableOpacity>
@@ -53,6 +65,11 @@ const Sidebar = () => {
                     <TouchableOpacity style={styles.sidebarbuttons} >
                         <EntypoIcon name="slideshare" size={35} color="black" />
                         <Text>About us</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.sidebarbuttons} onPress={HandleHome}>
+                        <EntypoIcon name="home" size={35} color="black" />
+                        <Text>Home</Text>
                     </TouchableOpacity>
 
                 </View>
