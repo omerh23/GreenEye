@@ -39,7 +39,7 @@ const Login = () => {
         setDetailMessage('')
         setApproveMessage('Login success..')
         const token = res.data.token;
-        console.log('token: ', token)
+        //console.log('token: ', token)
         await AsyncStorage.setItem('token', token);
         setUser(res.data.user)
         setDetailMessage('')

@@ -53,15 +53,6 @@ const HomePage = ({ route }) => {
   }
 
 
-
-  function handleLogout() {
-    setUser(null);
-    navigation.navigate('Login');
-  }
-  const toggleSidebar = () => {
-    setSidebarVisible(!sidebarVisible);
-  };
-
   return (
       <View style={styles.container}>
         <ImageBackground
@@ -109,28 +100,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     position: 'absolute',
   },
-  // buttonContainer: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-around',
-  //   alignItems: 'center',
-  //   flexWrap: 'wrap', // Allow buttons to wrap to the next row
-  //   marginTop: 10, // Add some margin to separate rows
-  //   width: '80%',
-  // },
-  // button: {
-  //   marginVertical: 10,
-  //   width: '30%', // Adjust the width based on the number of buttons per row
-  //   height: 100,
-  //   backgroundColor: 'rgba(255, 255, 255, 0.7)',
-  //   borderRadius: 10,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // },
-  // buttonText: {
-  //   fontSize: 16,
-  //   fontWeight: 'bold',
-  //   color: '#000',
-  // },
+
   userName: {
     position: 'absolute',
     top: 10, // Adjust the top position as needed
