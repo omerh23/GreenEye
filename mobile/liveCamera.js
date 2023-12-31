@@ -82,16 +82,19 @@ const LiveCameraScreen = () => {
             {isLoading && (
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="white" />
+                    <Text style={styles.result} >Loading please wait..</Text>
                 </View>
             )}
                 <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
                     <EntypoIcon name="cross" size={40} color="#2a7312" />
                 </TouchableOpacity>
+            {!isLoading && (
                 <TouchableOpacity style={styles.captureButton} onPress={captureScreen}>
                     <EntypoIcon name="camera" size={40} color="#2a7312" />
                     <Text style={styles.buttonText2}>Take screenshot </Text>
                     <Text style={styles.result}>{imageDetails}</Text>
                 </TouchableOpacity>
+            )}
             {uri ? (
                 <View style={styles.previewContainer}>
                     <Text>Preview</Text>
