@@ -29,6 +29,7 @@ app = FastAPI()
 cluster = MongoClient(mongodb_url)
 db = cluster["CLUSTER"]
 
+
 origins = [
     "http://localhost",
     "http://127.0.0.1",
