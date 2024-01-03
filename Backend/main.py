@@ -26,6 +26,7 @@ mongodb_url = os.getenv("MONGODB_URL")
 
 app = FastAPI()
 
+
 cluster = MongoClient(mongodb_url)
 db = cluster["CLUSTER"]
 
