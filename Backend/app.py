@@ -1,3 +1,4 @@
+import datetime
 import tempfile
 import base64
 from bson import ObjectId
@@ -11,7 +12,6 @@ from Backend.authentication import get_current_user
 from yolo.yolo import classify
 import os
 from cloudinary.uploader import upload
-from cloudinary.utils import cloudinary_url
 import cloudinary
 from pydantic import BaseModel
 
@@ -87,20 +87,28 @@ async def receive_image(data: ImageData):
         # Upload to Cloudinary
         response = upload(file_path, folder="your_folder_name")  # specify your folder name
         image_url = response.get("url")
-
-        # Clean up the temporary file
         os.remove(file_path)
-
-        # Save the URL to MongoDB
-        # Assuming you have a field 'images' which is a list
-        update_result = collection.update_one({"_id": userId}, {"$push": {"images": image_url}})
-
-        if update_result.modified_count == 0:
-            return {"message": "Failed to update the database"}
 
         image = np.array(Image.open(BytesIO(image_data)))
 
         predTuple = classify(image)
+
+        update_result = collection.update_one(
+            {"_id": userId},
+            {
+                "$push": {
+                    "images": {
+                        "url": image_url,
+                        "description": f"Result: {predTuple[0]}, confidence: {predTuple[1]}",
+                        "uploaded": datetime.date.today().isoformat()
+                    }
+                }
+            }
+        )
+
+        if update_result.modified_count == 0:
+            return {"message": "Failed to update the database"}
+
         return {
             'Result':predTuple[0],
             'confidence': float(predTuple[1])
@@ -109,3 +117,40 @@ async def receive_image(data: ImageData):
         # return {"message": "Image uploaded successfully", "url": image_url}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
+
+class obj:
+  def __init__(self, url, description, uploaded):
+    self.url = url
+    self.description = description
+    self.uploaded = uploaded
+
+
+ob = obj('http://res.cloudinary.com/dhd8azxmx/image/upload/v1704304935/your_folder_name/st9dtfbxkhx9fuaqje7l.png',
+         "Potato_healthy, confidence: 1", "2024-01-03")
+
+ob2 = obj("http://res.cloudinary.com/dhd8azxmx/image/upload/v1704304935/your_folder_name/st9dtfbxkhx9fuaqje7l.png",
+         "Potato_healthy, confidence: 10", "2024-01-04")
+ob3 = obj("http://res.cloudinary.com/dhd8azxmx/image/upload/v1704304935/your_folder_name/st9dtfbxkhx9fuaqje7l.png",
+         "Potato_healthy, confidence: 10", "2024-01-05")
+images = []
+images.append(ob)
+images.append(ob2)
+images.append(ob3)
+
+
+@router.post("/latestHistory")
+#async def receive_image(data: dict):
+async def receive_image():
+    try:
+        #userId = ObjectId(get_current_user(data["token"]))
+        #existing_user = collection.find_one({"_id": "123"})
+        return images
+
+
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
+
+
+
+
