@@ -1,8 +1,5 @@
 import os
-
 import cloudinary
-from bson import ObjectId
-from cloudinary.uploader import upload
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 import re
@@ -40,34 +37,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     return user_id
 
 
-@router.post("/protected-route")
-async def protected_route(screenshot: UploadFile = File(...), current_user: str = Depends(get_current_user)):
-    return {"user id": current_user}
-
-# @router.post("/endpoint")
-# async def process_data(data: imagedata):
-#     try:
-#         # Here, you can perform any necessary processing with the received data
-#         # For example, you might save the URI to a database or perform some other operation
-#
-#         # Assuming a simple response for demonstration purposes
-#         response_data = {"message": "Data received successfully", "token": data["token"]}
-#
-#         return response_data
-#     except Exception as e:
-#         # Handle any errors that might occur during processing
-#         raise HTTPException(status_code=500, detail=str(e))
-
-
-
-
 @router.post("/login")
 async def login_validation(data: dict):
     # Check for empty fields
     if not all(data.values()):
         return {"status": "empty_fields"}
 
-    # Retrieve user from the database based on the provided email
     existing_user = collection.find_one({"email": data['email']})
 
     if existing_user:

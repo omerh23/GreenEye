@@ -5,18 +5,18 @@ import Login from './login';
 import HomePage from "./homePage";
 import Register from "./register";
 import LiveCameraScreen from "./liveCamera";
-import Histroy from "./history";
+import History from "./history";
 
 const Stack = createNativeStackNavigator();
 const App = () => {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="History" screenOptions={{ headerShown: false }}>
+            <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="Home" component={HomePage} />
                 <Stack.Screen name="Register" component={Register} />
                 <Stack.Screen name="LiveCamera" component={LiveCameraScreen} />
-                <Stack.Screen name="History" component={Histroy} />
+                <Stack.Screen name="History" component={History} />
             </Stack.Navigator>
         </NavigationContainer>
     );
