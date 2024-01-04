@@ -14,6 +14,7 @@ import os
 from cloudinary.uploader import upload
 import cloudinary
 from pydantic import BaseModel
+import requests
 
 load_dotenv()
 router = APIRouter()
@@ -129,27 +130,43 @@ ob = obj('http://res.cloudinary.com/dhd8azxmx/image/upload/v1704304935/your_fold
          "Potato_healthy, confidence: 1", "2024-01-03")
 
 ob2 = obj("http://res.cloudinary.com/dhd8azxmx/image/upload/v1704304935/your_folder_name/st9dtfbxkhx9fuaqje7l.png",
-         "Potato_healthy, confidence: 10", "2024-01-04")
+         "Potato_healthy, confidence: 30", "2024-01-04")
 ob3 = obj("http://res.cloudinary.com/dhd8azxmx/image/upload/v1704304935/your_folder_name/st9dtfbxkhx9fuaqje7l.png",
-         "Potato_healthy, confidence: 10", "2024-01-05")
-images = []
-images.append(ob)
-images.append(ob2)
-images.append(ob3)
+         "Potato_healthy, confidence: 50", "2024-01-05")
+
+images = [ob, ob2, ob3]
+
+import base64
 
 
 @router.post("/latestHistory")
-#async def receive_image(data: dict):
-async def receive_image():
+async def receive_image(data: dict):
     try:
-        #userId = ObjectId(get_current_user(data["token"]))
-        #existing_user = collection.find_one({"_id": "123"})
-        return images
+        userId = ObjectId(get_current_user(data["token"]))
+        existing_user = collection.find_one({"_id": userId})
+
+        newImages = []
+        for image_info in existing_user['images']:
+            image_url = image_info['url']
+            response = requests.get(image_url)
+
+            if response.status_code == 200:
+                base64_image = base64.b64encode(response.content).decode('utf-8')
+                newImages.append({
+                    'url': f"data:image/jpeg;base64,{base64_image}",
+                    'description': image_info['description'],
+                    'uploaded': image_info['uploaded']
+                })
+            else:
+                print("Failed to download the image")
 
 
+
+        return newImages
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
+
 
 
 

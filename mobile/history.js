@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { StyleSheet, Text, TouchableOpacity, View, Image,ScrollView  } from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, ActivityIndicator} from "react-native";
 import Sidebar from "./Sidebar";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,6 +14,8 @@ const History = ({ route }) => {
     const [manualDetectionButton, setManualDetectionButton] = useState(false);
     const [historyDetectionButton, setHistoryDetectionButton] = useState(false);
     const [token, setToken] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
 
     useEffect(() => {
         (async () => {
@@ -23,13 +25,22 @@ const History = ({ route }) => {
     }, []);
 
     async function HandleLatestHistory(){
-        setLatestHistoryButton(!latestHistoryButton);
-        setManualDetectionButton(false);
-        setHistoryDetectionButton(false);
-        //const res = await axios.post('http://10.0.2.2:8000/latestHistory', {token});
-        const res = await axios.post('http://10.0.2.2:8000/latestHistory');
-        setData(res.data);
-        //console.log(res.data);
+        try{
+            setLatestHistoryButton(!latestHistoryButton);
+            setManualDetectionButton(false);
+            setHistoryDetectionButton(false);
+            setIsLoading(true);
+            const res = await axios.post('http://10.0.2.2:8000/latestHistory', {token});
+            //const res = await axios.post('http://10.0.2.2:8000/latestHistory');
+            setData(res.data);
+            //console.log(res.data);
+        }catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setIsLoading(false); // Stop loading regardless of success or error
+        }
+
+
     }
 
     function HandleManualDetection(){
@@ -73,34 +84,40 @@ const History = ({ route }) => {
                 </TouchableOpacity>
             </View>
 
-            <View style={styles.historyDetails}>
-                <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                    {latestHistoryButton &&
-                        data.map((item, index) => (
-                            <View key={index} style={styles.itemContainer}>
-                                <Text style={styles.historyText}>Description: {item.description}</Text>
-                                <Text style={styles.historyText}>Uploaded: {item.uploaded}</Text>
-                                <Image
-                                    source={require('./images/2b.jpg')}
-                                    style={{
-                                        width: 200,
-                                        height: 200,
-                                        borderWidth: 2,
-                                        borderColor: 'black',
-                                        borderRadius: 10,
-                                        marginBottom: 15,
-                                        marginTop: 10,
-                                    }}
-                                    onError={(error) =>
-                                        console.error(`Error loading image: ${error.nativeEvent.error}`)
-                                    }
-                                />
-                                {index < data.length - 1 && <View style={styles.separator} />}
-                            </View>
-                        ))
-                    }
-                </ScrollView>
-            </View>
+            {isLoading ? (
+                    <View style={{top:100}}>
+                        <ActivityIndicator size="large" color="black" />
+
+                    </View>
+            ) : (
+                <View style={styles.historyDetails}>
+                    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                        {latestHistoryButton &&
+                            data.map((item, index) => (
+                                <View key={index} style={styles.itemContainer}>
+                                    <Text style={styles.historyText}> {item.description}</Text>
+                                    <Text style={styles.historyText}>Uploaded: {item.uploaded}</Text>
+                                    <Image
+                                        source={{ uri: item.url }}
+                                        style={{
+                                            width: 250,
+                                            height: 250,
+                                            borderWidth: 2,
+                                            borderColor: 'black',
+                                            borderRadius: 10,
+                                            marginBottom: 15,
+                                            marginTop: 10,
+                                            resizeMode: 'stretch',
+                                        }}
+                                    />
+                                    {index < data.length - 1 && <View style={styles.separator} />}
+                                </View>
+                            ))
+                        }
+                    </ScrollView>
+                </View>
+            )}
+
 
 
         </View> //mainView

@@ -41,19 +41,19 @@ const Login = () => {
         const token = res.data.token;
         //console.log('token: ', token)
         await AsyncStorage.setItem('token', token);
-        setUser(res.data.user)
-        setDetailMessage('')
-        setApproveMessage('')
+        setUser(res.data.user);
+        setDetailMessage('');
+        setApproveMessage('');
       }
 
       else if (res.data.status === 'incorrect_details') {
-        setDetailMessage('incorrect details')
+        setDetailMessage('incorrect details');
       }
 
 
       else {
         // Handle other cases if needed
-        setDetailMessage('Login failed..')
+        setDetailMessage('Login failed..');
         console.log('Login failed: ', res.data.message);
       }
     } catch (error) {
