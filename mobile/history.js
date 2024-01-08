@@ -31,9 +31,7 @@ const History = ({ route }) => {
             setHistoryDetectionButton(false);
             setIsLoading(true);
             const res = await axios.post('http://10.0.2.2:8000/latestHistory', {token});
-            //const res = await axios.post('http://10.0.2.2:8000/latestHistory');
             setData(res.data);
-            //console.log(res.data);
         }catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -43,17 +41,36 @@ const History = ({ route }) => {
 
     }
 
-    function HandleManualDetection(){
-        setManualDetectionButton(!manualDetectionButton);
-        setLatestHistoryButton(false);
-        setHistoryDetectionButton(false);
+    async function HandleManualDetection() {
+        try {
+            setManualDetectionButton(!manualDetectionButton);
+            setLatestHistoryButton(false);
+            setHistoryDetectionButton(false);
+            setIsLoading(true);
+            const res = await axios.post('http://10.0.2.2:8000/manualDetection', {token});
+            setData(res.data);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
-    function HandleHistoryDetection(){
-        setManualDetectionButton(!manualDetectionButton);
-        setLatestHistoryButton(false);
-        setHistoryDetectionButton(false);
+    async function HandleDetectionHistory(){
+        try{
+            setHistoryDetectionButton(!historyDetectionButton);
+            setLatestHistoryButton(false);
+            setManualDetectionButton(false);
+            setIsLoading(true);
+            const res = await axios.post('http://10.0.2.2:8000/detectionHistory', {token});
+            setData(res.data);
+        }catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setIsLoading(false);
+        }
     }
+
 
 
     return (
@@ -75,11 +92,7 @@ const History = ({ route }) => {
 
                 <TouchableOpacity
                     style={[styles.historyButtons, historyDetectionButton && styles.buttonPressed]}
-                    onPress={() => {setHistoryDetectionButton(!historyDetectionButton)
-                        setLatestHistoryButton(false);
-                        setManualDetectionButton(false);
-
-                    }}>
+                    onPress={HandleDetectionHistory}>
                     <Text style={styles.historyButton}>Detection History</Text>
                 </TouchableOpacity>
             </View>
@@ -92,7 +105,7 @@ const History = ({ route }) => {
             ) : (
                 <View style={styles.historyDetails}>
                     <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                        {latestHistoryButton &&
+                        {(latestHistoryButton || manualDetectionButton || historyDetectionButton) &&
                             data.map((item, index) => (
                                 <View key={index} style={styles.itemContainer}>
                                     <Text style={styles.historyText}> {item.description}</Text>

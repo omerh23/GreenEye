@@ -26,14 +26,14 @@ const LiveCameraScreen = () => {
             RNFS.readFile(uri, 'base64')
                 .then(base64String => {
                     // Send the base64 string to the server
-                     axios.post('http://10.0.2.2:8000/test', {
+                     axios.post('http://10.0.2.2:8000/manualCapture', {
                         imageUri: `data:image/png;base64,${base64String}`,
                         token:token
                     })
                         .then(response => {
                             console.log('Image uploaded successfully:', response.data);
                             setUri("");
-                            const { class: className, confidence } = response.data;
+                            const { Result: className, confidence } = response.data; // Use "Result" instead of "class"
                             const detailString = `Result: ${className}, Confidence: ${confidence}`;
                             setImageDetails(detailString);
                         })

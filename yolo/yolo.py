@@ -47,4 +47,4 @@ def classify(image_to_classify):
 
     max_label = max(predictDic, key=lambda k: predictDic[k][0])
     avg_confidence = predictDic[max_label][1] / predictDic[max_label][0] if predictDic[max_label][0] > 0 else 1
-    return max_label, avg_confidence
+    return max_label, round(avg_confidence*100, 2)
