@@ -1,11 +1,12 @@
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Login from './login';
-import HomePage from "./homePage";
-import Register from "./register";
-import LiveCameraScreen from "./liveCamera";
-import History from "./history";
+import Login from './Sign/login';
+import HomePage from "./Home/homePage";
+import Register from "./Sign/register";
+import LiveCameraScreen from "./Home/liveCamera";
+import History from "./Home/history";
+import Settings from "./sidebarComponents/settings";
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -17,6 +18,7 @@ const App = () => {
                 <Stack.Screen name="Register" component={Register} />
                 <Stack.Screen name="LiveCamera" component={LiveCameraScreen} />
                 <Stack.Screen name="History" component={History} />
+                <Stack.Screen name="Settings" component={Settings} />
             </Stack.Navigator>
         </NavigationContainer>
     );

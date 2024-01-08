@@ -25,6 +25,12 @@ const Sidebar = () => {
 
     }
 
+    function HandleSettings() {
+        setButtonPressed(false);
+        navigation.navigate('Settings');
+
+    }
+
     return (
         <View style={styles.container}>
 
@@ -49,9 +55,9 @@ const Sidebar = () => {
                         <Text>Guide</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.sidebarbuttons} >
+                    <TouchableOpacity style={styles.sidebarbuttons} onPress={HandleSettings}>
                         <EntypoIcon name="cog" size={35} color="black" />
-                        <Text>Setting</Text>
+                        <Text>Settings</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.sidebarbuttons} >
