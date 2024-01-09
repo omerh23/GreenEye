@@ -3,6 +3,7 @@ import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native"
 import Sidebar from "../Sidebar";
 import {fetchUserData} from "../userUtils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 
 const Settings = () => {
@@ -10,10 +11,19 @@ const Settings = () => {
     const [token, setToken] = useState(null);
     const [username,setUsername] = useState(null);
     const [email,setEmail] = useState(null);
-    const [password,setPassword] = useState(null);
+    const [cameraUrl,setCameraUrl] = useState(null);
+    const [detailMessage,setDetailMessage] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [colorDetails, setcolorDetails] = useState('red');
+
+
+
+    const [oldPassword,setOldPassword] = useState(null);
     const [emailBorder, setEmailBorder] = useState('#2a7312');
+    const [cameraUrlBorder,setCameraUrlBorder] = useState('#2a7312');
     const [passwordBorder, setPasswordBorder] = useState('#2a7312');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [newPasswordBorder, setNewPasswordBorder] = useState('#2a7312');
+
 
 
     useEffect(() => {
@@ -22,49 +32,107 @@ const Settings = () => {
             setUser(userData);
             const storedToken = await AsyncStorage.getItem('token');
             setToken(storedToken);
+
         };
 
         getUserData();
     }, []);
 
+    async function handleSubmit() {
+        setEmailBorder('#2a7312');
+        setPasswordBorder('#2a7312');
+        setNewPasswordBorder('#2a7312');
+        setDetailMessage('');
+        setcolorDetails('red');
+        const res = await axios.post('http://10.0.2.2:8000/changeDetails',{token,username
+        ,email,oldPassword,newPassword,cameraUrl});
+        //setDetailMessage('');
+        console.log(res.data.status);
+        if (res.data.status === 'success') {
+            setUser(res.data.user);
+            await AsyncStorage.setItem('userData', JSON.stringify(res.data.user));
+            console.log(res.data.user);
+            setcolorDetails('#2a7312');
+            setDetailMessage('Details change successfully');
+            //setSuccessModalVisible(true); // Show the success modal
+            console.log('change details success');
+        }
+
+        else if (res.data.status === 'invalid_email') {
+            setEmailBorder('red')
+            setDetailMessage('Invalid email format');
+        }
+
+        else if (res.data.status === 'email_already_registered') {
+            setEmailBorder('red')
+            setDetailMessage('Email is already registered');
+        }
+
+        else if (res.data.status === 'short_password') {
+            setNewPasswordBorder('red')
+            setDetailMessage('Short password (min 6 chars)');
+        }
+
+        else if (res.data.status === 'empty_fields') {
+            setDetailMessage('All fields must be filled');
+        }
+
+        else if (res.data.status === 'Wrong_old_password') {
+            setPasswordBorder('red')
+            setDetailMessage('Wrong old password');
+        }
+
+
+
+    }
+
     return(
         <View style={styles.container}>
             <Sidebar/>
             <View style={styles.form}>
-                <Text style={styles.loginheader}>Settings</Text>
+                <Text style={styles.settingsHeader}>Settings</Text>
                 <Text style={styles.label}>Change username:</Text>
                 <TextInput
                     style={styles.input}
-                    // placeholder={"Enter your Name"}
-                    value={user? user.username : null}
+                    placeholder={user? user.username : null}
+                    //value={user? user.username : null}
                     onChangeText={setUsername}
                 />
-                <Text style={styles.label}>Email:</Text>
+                <Text style={styles.label}>Change email:</Text>
                 <TextInput
                     style={[styles.input, { borderColor: emailBorder}]}
-                    // placeholder="Enter your Email"
-                    value={user? user.email : null}
+                    placeholder={user? user.email : null}
+                    //value={user? user.email : null}
                     onChangeText={setEmail}
                 />
-                <Text style={styles.label}>Password:</Text>
+                <Text style={styles.label}>Change camera url:</Text>
+                <TextInput
+                    style={[styles.input, { borderColor: cameraUrlBorder}]}
+                    // value="Enter your Email"
+                    placeholder={user? user.cameraUrl : null}
+                    onChangeText={setCameraUrl}
+                />
+                <Text style={styles.label}>Enter old password:</Text>
                 <TextInput
                     style={[styles.input, { borderColor: passwordBorder}]}
-                    placeholder="Enter your password"
+                    placeholder="Old password"
                     secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
+                    value={oldPassword}
+                    onChangeText={setOldPassword}
                 />
-                <Text style={styles.label}>Confirm Password:</Text>
+                <Text style={styles.label}>Enter new Password:</Text>
                 <TextInput
-                    style={[styles.input, { borderColor: passwordBorder}]}
-                    placeholder="Enter your password"
+                    style={[styles.input, { borderColor: newPasswordBorder}]}
+                    placeholder="New password"
                     secureTextEntry
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
+                    value={newPassword}
+                    onChangeText={setNewPassword}
                 />
+                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+                    <Text style={styles.submitText}>Submit</Text>
+                </TouchableOpacity>
 
-
-                {/*<Text style={styles.details} >{detailMessage} </Text>*/}
+                <Text style={[styles.details, {color: colorDetails}]} >{detailMessage} </Text>
 
             </View>
         </View>
@@ -77,20 +145,6 @@ export const styles = StyleSheet.create({
         //justifyContent: 'center',
         //alignItems: 'center',
         padding: 20,
-    },
-    logo: {
-        position: 'absolute',
-        top: 10,
-        left: 10,
-        width: 80, // Adjust the size of your logo
-        height: 80, // Adjust the size of your logo
-    },
-    backgroundImage: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-        position: 'absolute',
     },
     form: {
         backgroundColor: 'rgba(255, 255, 255, 0.7)',
@@ -107,7 +161,7 @@ export const styles = StyleSheet.create({
         marginTop: 100,
 
     },
-    loginheader: {
+    settingsHeader: {
         fontSize: 20,
         textAlign: 'center',
         marginBottom: 15,
@@ -126,7 +180,7 @@ export const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
     },
-    loginbutton: {
+    submitButton: {
         alignItems: 'center',
         backgroundColor: '#2a7312', // Set your desired background color
         borderRadius: 50, // Set your desired border radius
@@ -136,7 +190,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginBottom: 15,
     },
-    buttonText1: {
+    submitText: {
         color: 'white', // Set the text color
         fontSize: 16, // Set the font size
         fontWeight: 'bold', // Set the font weight
@@ -153,6 +207,12 @@ export const styles = StyleSheet.create({
     details: {
         textAlign: 'center',
         color: 'red',
+        fontSize: 16,
+
+    },
+    approveDetails:{
+        color: '#2a7312',
+        textAlign: 'center',
 
     },
     modal: {

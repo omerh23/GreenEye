@@ -32,8 +32,8 @@ const Register = () => {
 
     const handleRegister = async () => {
         try {
-            setEmailBorder('#2a7312')
-            setPasswordBorder('#2a7312')
+            setEmailBorder('#2a7312');
+            setPasswordBorder('#2a7312');
 
             const res = await axios.post('http://10.0.2.2:8000/register', { password, confirmPassword, username, email });
             console.log(res.data.status);
@@ -42,7 +42,6 @@ const Register = () => {
                 setDetailMessage('')
                 setSuccessModalVisible(true); // Show the success modal
                 console.log('Register success');
-                //navigation.navigate('Login');
             }
 
             else if (res.data.status === 'invalid_email') {

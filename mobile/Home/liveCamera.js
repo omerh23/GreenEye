@@ -3,7 +3,7 @@ import {StyleSheet, TouchableOpacity, View, ActivityIndicator, Image, Text, Dime
 import { VLCPlayer } from 'react-native-vlc-media-player';
 import { useNavigation } from "@react-navigation/native";
 import EntypoIcon from "react-native-vector-icons/Entypo";
-import axios, {post} from "axios";
+import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS from 'react-native-fs';
 import ViewShot from "react-native-view-shot";
@@ -33,8 +33,8 @@ const LiveCameraScreen = () => {
                         .then(response => {
                             console.log('Image uploaded successfully:', response.data);
                             setUri("");
-                            const { Result: className, confidence } = response.data; // Use "Result" instead of "class"
-                            const detailString = `Result: ${className}, Confidence: ${confidence}`;
+                            const { Result: className, confidence } = response.data;
+                            const detailString = `Result: ${className}, Confidence: ${confidence}%`;
                             setImageDetails(detailString);
                         })
                         .catch(error => {

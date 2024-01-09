@@ -1,6 +1,9 @@
 import datetime
+import re
 import tempfile
 import base64
+
+import bcrypt
 from bson import ObjectId
 from dotenv import load_dotenv
 from fastapi import UploadFile, File, APIRouter, HTTPException, Depends
@@ -231,5 +234,56 @@ async def manualDetection(data: dict):
         return latestHistory
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
 
+
+@router.post('/changeDetails')
+async def changeDetails(data: dict):
+    try:
+        if not all(data.values()):
+            return {"status": "empty_fields"}
+
+        userId = ObjectId(get_current_user(data["token"]))
+        existing_user = collection.find_one({"_id": userId})
+
+        existing_mail = collection.find_one({"email": data['email']})
+
+        if existing_mail and data['email'] != existing_user['email']:
+            return {"status": "email_already_registered"}
+
+        userId = ObjectId(get_current_user(data["token"]))
+        existing_user = collection.find_one({"_id": userId})
+
+        old_password = data['oldPassword'].encode('utf-8')
+        if not bcrypt.checkpw(old_password, existing_user['password'].encode('utf-8')):
+            return {"status": "wrong_old_password"}
+
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(email_regex, data['email']):
+            return {"status": "invalid_email"}
+
+        if not len(data['newPassword']) > 5:
+            return {"status": "short_password"}
+
+        new_hashed_password = bcrypt.hashpw(data['newPassword'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        update_result = collection.update_one(
+            {"_id": userId},
+            {"$set": {
+                "username": data['username'],
+                "email": data['email'],
+                "password": new_hashed_password,
+                "cameraUrl": data['cameraUrl']
+            }}
+        )
+
+        if update_result.modified_count == 0:
+            return {"message": "Failed to update the database"}
+
+        updated_user = collection.find_one({"_id": userId})
+        updated_user['_id'] = str(existing_user['_id'])
+        return {"status": "success", "user": updated_user}
+
+    except Exception as e:
+        print("Error:", e)
+        raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
