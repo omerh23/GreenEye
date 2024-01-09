@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, TouchableOpacity, View, ActivityIndicator, Image, Text, Dimensions} from 'react-native';
 import { VLCPlayer } from 'react-native-vlc-media-player';
 import { useNavigation } from "@react-navigation/native";
@@ -7,6 +7,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS from 'react-native-fs';
 import ViewShot from "react-native-view-shot";
+import {fetchUserData} from "../userUtils";
 
 
 const LiveCameraScreen = () => {
@@ -14,14 +15,33 @@ const LiveCameraScreen = () => {
     const navigation = useNavigation();
     const [isLoading, setIsLoading] = useState(true);
     const [imageDetails, setImageDetails] = useState("");
+    const [user, setUser] = useState(null);
+    const [token, setToken] = useState(null);
+    const [cameraUrl, setCameraUrl] = useState('')
 
     const viewShot = useRef(null);
     const [uri, setUri] = useState("");
+
+    useEffect(() => {
+        const getUserData = async () => {
+            const userData = await fetchUserData();
+            setUser(userData);
+            const storedToken = await AsyncStorage.getItem('token');
+            setToken(storedToken);
+            if (user){
+                setCameraUrl(user.cameraUrl);
+                console.log("Camera url:", user.cameraUrl);
+            }
+
+        };
+        getUserData();
+    }, []);
+
     const captureScreen = () => {
         viewShot.current.capture().then(async (uri) => {
             setUri(uri);
             setImageDetails('');
-            const token = await AsyncStorage.getItem('token');
+            //const token = await AsyncStorage.getItem('token');
             // Convert image to base64
             RNFS.readFile(uri, 'base64')
                 .then(base64String => {
@@ -65,11 +85,14 @@ const LiveCameraScreen = () => {
 
     return (
         <View style={styles.container}>
+            {/*{console.log(user.cameraUrl)}*/}
             <ViewShot ref={viewShot} style={styles.viewShot}>
                 <VLCPlayer
                     ref={vlcPlayerRef}
                     style={styles.video}
-                    source={{ uri: 'rtsp://admin:GreenEye7070@greeneyeservices.ddns.net:663/h264Preview_01_sub' }}
+                    //source={{ uri: 'rtsp://admin:GreenEye7070@greeneyeservices.ddns.net:663/h264Preview_01_sub' }}
+                    source={{ uri: cameraUrl }}
+
                     autoplay={true}
                     initType={2} // Use 2 for RTSP streams
                     hwDecoderEnabled={true}
