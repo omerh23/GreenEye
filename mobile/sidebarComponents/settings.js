@@ -9,9 +9,9 @@ import axios from "axios";
 const Settings = () => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
-    const [username,setUsername] = useState(null);
-    const [email,setEmail] = useState(null);
-    const [cameraUrl,setCameraUrl] = useState(null);
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [cameraUrl,setCameraUrl] = useState('');
     const [detailMessage,setDetailMessage] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [colorDetails, setcolorDetails] = useState('red');
@@ -30,13 +30,21 @@ const Settings = () => {
         const getUserData = async () => {
             const userData = await fetchUserData();
             setUser(userData);
+
             const storedToken = await AsyncStorage.getItem('token');
             setToken(storedToken);
 
+            // Set the input fields with user details
+            if (userData) {
+                setUsername(userData.username || '');
+                setEmail(userData.email || '');
+                setCameraUrl(userData.cameraUrl || '');
+            }
         };
 
         getUserData();
     }, []);
+
 
     async function handleSubmit() {
         setEmailBorder('#2a7312');
@@ -46,12 +54,14 @@ const Settings = () => {
         setcolorDetails('red');
         const res = await axios.post('http://10.0.2.2:8000/changeDetails',{token,username
         ,email,oldPassword,newPassword,cameraUrl});
-        //setDetailMessage('');
         console.log(res.data.status);
+
         if (res.data.status === 'success') {
             setUser(res.data.user);
+            setOldPassword(null);
+            setNewPassword(null);
             await AsyncStorage.setItem('userData', JSON.stringify(res.data.user));
-            console.log(res.data.user);
+            setUser(res.data.user);
             setcolorDetails('#2a7312');
             setDetailMessage('Details change successfully');
             //setSuccessModalVisible(true); // Show the success modal
@@ -77,7 +87,7 @@ const Settings = () => {
             setDetailMessage('All fields must be filled');
         }
 
-        else if (res.data.status === 'Wrong_old_password') {
+        else if (res.data.status === 'wrong_old_password') {
             setPasswordBorder('red')
             setDetailMessage('Wrong old password');
         }
@@ -94,22 +104,22 @@ const Settings = () => {
                 <Text style={styles.label}>Change username:</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder={user? user.username : null}
-                    //value={user? user.username : null}
+                    //placeholder={user? user.username : null}
+                    value={username}
                     onChangeText={setUsername}
                 />
                 <Text style={styles.label}>Change email:</Text>
                 <TextInput
                     style={[styles.input, { borderColor: emailBorder}]}
-                    placeholder={user? user.email : null}
-                    //value={user? user.email : null}
+                    //placeholder={user? user.email : null}
+                    value={email}
                     onChangeText={setEmail}
                 />
                 <Text style={styles.label}>Change camera url:</Text>
                 <TextInput
                     style={[styles.input, { borderColor: cameraUrlBorder}]}
-                    // value="Enter your Email"
-                    placeholder={user? user.cameraUrl : null}
+                    value={cameraUrl}
+                    //placeholder={user? user.cameraUrl : null}
                     onChangeText={setCameraUrl}
                 />
                 <Text style={styles.label}>Enter old password:</Text>

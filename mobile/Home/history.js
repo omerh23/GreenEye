@@ -26,7 +26,7 @@ const History = () => {
         };
 
         getUserData();
-    }, []);
+    }, );
 
 
     async function HandleLatestHistory(){

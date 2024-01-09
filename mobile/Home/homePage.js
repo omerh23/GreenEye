@@ -35,7 +35,7 @@ const HomePage = () => {
     };
 
     getUserData();
-  }, []);
+  }, );
 
   const sendNotification = (buttonIndex) => {
     if (sidebarVisible){
