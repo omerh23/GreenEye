@@ -33,6 +33,10 @@ def classify(image_to_classify):
     render.show()
 
     yolo_boxes = yolo_results[0].boxes.xyxy.tolist()
+
+    if not yolo_boxes:
+        return 'No identify', 100
+
     yolo_class_indices = yolo_results[0].boxes.cls.tolist()
     yolo_confidences = yolo_results[0].boxes.conf.tolist()
 
