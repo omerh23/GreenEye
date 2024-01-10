@@ -19,31 +19,31 @@ const Login = () => {
   const navigation = useNavigation();
   const [detailMessage,setDetailMessage] = useState('');
   const [user,setUser] = useState();
-  const [approveMessage,setApproveMessage] = useState('');
+  const [colorDetails, setColorDetails] = useState('red');
 
 
   const handleSignIn = async () => {
     try {
       setDetailMessage('')
-      setApproveMessage('Loading please wait..')
+      setColorDetails('#2a7312');
+      setDetailMessage('Loading please wait..')
       const res = await axios.post('http://10.0.2.2:8000/login', { email, password }, {
         timeout: 10000
       });
 
-      setApproveMessage('')
-
+      setColorDetails('red');
       if (res.data.status === 'empty_fields') {
         setDetailMessage('All fields must be filled');
       }
       else if (res.data.status === 'success') {
         setDetailMessage('')
-        setApproveMessage('Login success..')
+        setColorDetails('#2a7312');
+        setDetailMessage('Login success..')
         const token = res.data.token;
         //console.log('token: ', token)
         await AsyncStorage.setItem('token', token);
         setUser(res.data.user);
         setDetailMessage('');
-        setApproveMessage('');
       }
 
       else if (res.data.status === 'incorrect_details') {
@@ -60,7 +60,6 @@ const Login = () => {
       if (error.message === 'Network Error') {
         //console.error('Request timed out. Please try again.');
         setDetailMessage('No response from server');
-        setApproveMessage('');
       } else {
         console.error('Error:', error.message);
       }
@@ -118,8 +117,8 @@ const Login = () => {
         <TouchableOpacity style={styles.loginbutton} onPress={handleSignIn}>
           <Text style={styles.buttonText1}>Signin</Text>
         </TouchableOpacity>
-        <Text style={styles.details} >{detailMessage} </Text>
-        <Text style={{textAlign: 'center'}} > {approveMessage} </Text>
+        <Text style={[styles.details, {color: colorDetails}]} >{detailMessage} </Text>
+        {/*<Text style={{textAlign: 'center'}} > {approveMessage} </Text>*/}
         <View style={styles.rowContainer}>
           <Text>Not a user?</Text>
           <TouchableOpacity onPress={navigateToRegister}>

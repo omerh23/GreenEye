@@ -14,7 +14,7 @@ const Settings = () => {
     const [cameraUrl,setCameraUrl] = useState('');
     const [detailMessage,setDetailMessage] = useState('');
     const [newPassword, setNewPassword] = useState('');
-    const [colorDetails, setcolorDetails] = useState('red');
+    const [colorDetails, setColorDetails] = useState('red');
 
 
 
@@ -51,7 +51,7 @@ const Settings = () => {
         setPasswordBorder('#2a7312');
         setNewPasswordBorder('#2a7312');
         setDetailMessage('');
-        setcolorDetails('red');
+        setColorDetails('red');
         const res = await axios.post('http://10.0.2.2:8000/changeDetails',{token,username
         ,email,oldPassword,newPassword,cameraUrl});
         console.log(res.data.status);
@@ -62,7 +62,7 @@ const Settings = () => {
             setNewPassword(null);
             await AsyncStorage.setItem('userData', JSON.stringify(res.data.user));
             setUser(res.data.user);
-            setcolorDetails('#2a7312');
+            setColorDetails('#2a7312');
             setDetailMessage('Details change successfully');
             //setSuccessModalVisible(true); // Show the success modal
             console.log('change details success');
