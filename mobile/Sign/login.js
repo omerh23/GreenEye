@@ -31,11 +31,7 @@ const Login = () => {
         timeout: 10000
       });
 
-      setColorDetails('red');
-      if (res.data.status === 'empty_fields') {
-        setDetailMessage('All fields must be filled');
-      }
-      else if (res.data.status === 'success') {
+      if (res.data.status === 'success') {
         setDetailMessage('');
         setColorDetails('#2a7312');
         setDetailMessage('Login success..')
@@ -44,20 +40,28 @@ const Login = () => {
         setUser(res.data.user);
         setDetailMessage('');
       }
+      else{
+        setColorDetails('red');
+        if (res.data.status === 'empty_fields') {
+          setDetailMessage('All fields must be filled');
+        }
+        else if (res.data.status === 'incorrect_details') {
+          setDetailMessage('incorrect details');
+        }
 
-      else if (res.data.status === 'incorrect_details') {
-        setDetailMessage('incorrect details');
+
+        else {
+          // Handle other cases if needed
+          setDetailMessage('Login failed..');
+          console.log('Login failed: ', res.data.message);
+        }
       }
 
 
-      else {
-        // Handle other cases if needed
-        setDetailMessage('Login failed..');
-        console.log('Login failed: ', res.data.message);
-      }
     } catch (error) {
       if (error.message === 'Network Error') {
         //console.error('Request timed out. Please try again.');
+        setColorDetails('red');
         setDetailMessage('No response from server');
       } else {
         console.error('Error:', error.message);
