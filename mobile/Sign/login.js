@@ -24,9 +24,9 @@ const Login = () => {
 
   const handleSignIn = async () => {
     try {
-      setDetailMessage('')
+      setDetailMessage('');
       setColorDetails('#2a7312');
-      setDetailMessage('Loading please wait..')
+      setDetailMessage('Loading please wait..');
       const res = await axios.post('http://10.0.2.2:8000/login', { email, password }, {
         timeout: 10000
       });
@@ -36,11 +36,10 @@ const Login = () => {
         setDetailMessage('All fields must be filled');
       }
       else if (res.data.status === 'success') {
-        setDetailMessage('')
+        setDetailMessage('');
         setColorDetails('#2a7312');
         setDetailMessage('Login success..')
         const token = res.data.token;
-        //console.log('token: ', token)
         await AsyncStorage.setItem('token', token);
         setUser(res.data.user);
         setDetailMessage('');

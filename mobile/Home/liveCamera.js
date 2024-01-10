@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS from 'react-native-fs';
 import ViewShot from "react-native-view-shot";
 import {fetchUserData} from "../userUtils";
+import Logo from "./logo";
 
 
 const LiveCameraScreen = () => {

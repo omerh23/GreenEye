@@ -15,6 +15,7 @@ import HomeButtons from "./homeButtons";
 import LiveCameraScreen from "./liveCamera";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {fetchUserData} from "../userUtils";
+import Logo from "./logo";
 // const Button = ({text, onPress}) => (
 //     <TouchableOpacity style={styles.button} onPress={onPress}>
 //       <Text style={styles.buttonText}>{text}</Text>
@@ -65,8 +66,7 @@ const HomePage = () => {
             style={styles.backgroundImage}
             resizeMode="cover"
         />
-
-        <Image source={require('../images/gelogo.png')} style={styles.logo} />
+        <Logo/>
         <View style={styles.userName}>
           <Text>Welcome, {user ? user.username : 'NULL'} !</Text>
           <Sidebar/>

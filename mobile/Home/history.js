@@ -4,6 +4,8 @@ import Sidebar from "../Sidebar";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {fetchUserData} from "../userUtils";
+import {useNavigation} from "@react-navigation/native";
+import Logo from "./logo";
 
 const History = () => {
     const [user, setUser] = useState(null);
@@ -15,7 +17,7 @@ const History = () => {
     const [historyDetectionButton, setHistoryDetectionButton] = useState(false);
     const [token, setToken] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-
+    const navigation = useNavigation();
 
     useEffect(() => {
         const getUserData = async () => {
@@ -78,9 +80,12 @@ const History = () => {
 
 
 
+
     return (
         <View style={styles.container}>
-            <Text>Hi, {user ? user.username : 'NULL'}</Text>
+            {/*<Text>  Hi, {user ? user.username : 'NULL'}</Text>*/}
+            <Logo/>
+
             <Sidebar />
             <View style={styles.historyMenu}>
                 <TouchableOpacity
@@ -191,6 +196,13 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: 'bold',
 
+    },
+    logo: {
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        width: 80, // Adjust the size of your logo
+        height: 80, // Adjust the size of your logo
     },
 
 });

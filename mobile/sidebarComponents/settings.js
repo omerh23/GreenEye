@@ -4,6 +4,7 @@ import Sidebar from "../Sidebar";
 import {fetchUserData} from "../userUtils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import Logo from "../Home/logo";
 
 
 const Settings = () => {
@@ -98,6 +99,7 @@ const Settings = () => {
 
     return(
         <View style={styles.container}>
+            <Logo/>
             <Sidebar/>
             <View style={styles.form}>
                 <Text style={styles.settingsHeader}>Settings</Text>
