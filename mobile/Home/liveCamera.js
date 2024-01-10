@@ -8,7 +8,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS from 'react-native-fs';
 import ViewShot from "react-native-view-shot";
 import {fetchUserData} from "../userUtils";
-import Logo from "./logo";
 
 
 const LiveCameraScreen = () => {
@@ -16,7 +15,6 @@ const LiveCameraScreen = () => {
     const navigation = useNavigation();
     const [isLoading, setIsLoading] = useState(true);
     const [imageDetails, setImageDetails] = useState("");
-    const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     const [cameraUrl, setCameraUrl] = useState('')
 
@@ -25,18 +23,22 @@ const LiveCameraScreen = () => {
 
     useEffect(() => {
         const getUserData = async () => {
-            const userData = await fetchUserData();
-            setUser(userData);
-            const storedToken = await AsyncStorage.getItem('token');
-            setToken(storedToken);
-            if (user){
-                setCameraUrl(user.cameraUrl);
-                console.log("Camera url:", user.cameraUrl);
+            try {
+                const userData = await fetchUserData();
+                const storedToken = await AsyncStorage.getItem('token');
+                setToken(storedToken);
+                if (userData) {
+                    setCameraUrl(userData.cameraUrl);
+                    console.log("Camera url:", userData.cameraUrl);
+                }
+            } catch (error) {
+                console.error('Error fetching and setting user data', error);
             }
-
         };
+
         getUserData();
     }, []);
+
 
     const captureScreen = () => {
         viewShot.current.capture().then(async (uri) => {
@@ -91,9 +93,8 @@ const LiveCameraScreen = () => {
                 <VLCPlayer
                     ref={vlcPlayerRef}
                     style={styles.video}
-                    //source={{ uri: 'rtsp://admin:GreenEye7070@greeneyeservices.ddns.net:663/h264Preview_01_sub' }}
+                    //source={{ uri: 'rtsp://admin:GreenEye7070@80.250.150.18:663/h264Preview_01_sub'}}
                     source={{ uri: cameraUrl }}
-
                     autoplay={true}
                     initType={2} // Use 2 for RTSP streams
                     hwDecoderEnabled={true}
