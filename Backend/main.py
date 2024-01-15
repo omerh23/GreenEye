@@ -2,14 +2,12 @@ import secrets
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import dotenv
 import uvicorn
 import sys
 from pathlib import Path
 from pymongo import MongoClient
 from app import router as app_router
 from authentication import router as auth_router
-
 import cloudinary
 
 import os

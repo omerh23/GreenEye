@@ -9,7 +9,7 @@ import React from "react";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { Paper, CardActionArea, CardMedia, Grid, TableContainer, Table, TableBody, TableHead, TableRow, TableCell, Button, CircularProgress } from "@material-ui/core";
-import cblogo from "./cblogo.jpg";
+import cblogo from "./cblogo.PNG";
 import image from "./bg.png";
 import { DropzoneArea } from 'material-ui-dropzone';
 import { common } from '@material-ui/core/colors';
@@ -150,9 +150,7 @@ export const ImageUpload = () => {
   const [data, setData] = useState();
   const [image, setImage] = useState(false);
   const [isLoading, setIsloading] = useState(false);
-  const apiUrl = process.env.REACT_APP_API_URL;
   let confidence = 0;
-
 
   const sendFile = async () => {
     if (image) {
@@ -160,7 +158,7 @@ export const ImageUpload = () => {
       formData.append("file", selectedFile);
       let res = await axios({
         method: "post",
-        url: 'http://localhost:8000/login/predict', // Update this URL
+        url: 'http://localhost:8000/predict', // Update this URL
         data: formData,
       });
       if (res.status === 200) {
@@ -182,7 +180,6 @@ export const ImageUpload = () => {
       setPreview(undefined);
       return;
     }
-
     const objectUrl = URL.createObjectURL(selectedFile);
     setPreview(objectUrl);
   }, [selectedFile]);
@@ -216,7 +213,7 @@ export const ImageUpload = () => {
       <AppBar position="static" className={classes.appbar}>
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            GreenEye: Plant Disease Classification
+            CodeBasics: Potato Disease Classification
           </Typography>
           <div className={classes.grow} />
           <Avatar src={cblogo}></Avatar>

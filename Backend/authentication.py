@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 import re
 import bcrypt
-import secrets
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from pymongo import MongoClient

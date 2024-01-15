@@ -1,4 +1,4 @@
-import { ImageUpload } from "./home.js";
+import { ImageUpload } from "./home";
 
 function App() {
   return <ImageUpload />;
