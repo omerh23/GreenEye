@@ -3,6 +3,9 @@ import {View, TouchableOpacity, Text, StyleSheet, Image, Dimensions} from 'react
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
+import RNFS from "react-native-fs";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CameraView = () => {
     const camera = useRef(null);
@@ -10,13 +13,19 @@ const CameraView = () => {
     const device = useCameraDevice('front');
     const navigation = useNavigation();
     const [imageSource, setImageSource] =useState('');
+    const [token, setToken] = useState(null);
+    const [imageDetails, setImageDetails] = useState("");
+
     useEffect(() => {
         const initializeCamera = async () => {
             try {
                 await requestPermission();
                 if (hasPermission) {
                     console.log('Has permission');
+
                 }
+                const storedToken = await AsyncStorage.getItem('token');
+                setToken(storedToken);
             } catch (error) {
                 console.error('Error initializing camera:', error);
             }
@@ -29,11 +38,25 @@ const CameraView = () => {
     };
 
     async function HandlePhoto() {
-        const photo = await camera.current.takePhoto()
-        setImageSource(`file://${photo.path}`);
-        console.log("Photo:",photo);
-        console.log("Photo path:",photo.path);
 
+        try {
+            setImageDetails('');
+
+            const photo = await camera.current.takePhoto()
+
+            setImageSource(`file://${photo.path}`);
+
+            const base64Image = await RNFS.readFile(photo.path, 'base64');
+            const response = await axios.post('http://10.0.2.2:8000/selfCamera', {base64Image,token});
+            console.log('Image uploaded successfully:', response.data);
+            setImageSource("");
+            const { Result: className, confidence } = response.data;
+            const detailString = `Result: ${className}, Confidence: ${confidence}%`;
+            setImageDetails(detailString);
+        }
+        catch (e){
+            console.error('Error fetching data:', e);
+        }
     }
 
     function closeCapture() {
@@ -62,7 +85,7 @@ const CameraView = () => {
             <TouchableOpacity style={styles.captureButton} onPress={HandlePhoto}>
                 <EntypoIcon name="camera" size={40} color="#2a7312" />
                 <Text style={styles.buttonText2}>Take screenshot </Text>
-                {/*<Text style={styles.result}>{imageDetails}</Text>*/}
+                <Text style={styles.result}>{imageDetails}</Text>
             </TouchableOpacity>
             {imageSource ? (
                 <View style={styles.previewContainer}>
@@ -119,6 +142,11 @@ const styles = StyleSheet.create({
         color: 'green',
         marginTop: 10,
     },
+    result: {
+        marginTop: 20,
+        fontSize: 16,
+        color: "black",
+    }
 
 
 });

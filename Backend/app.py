@@ -1,4 +1,5 @@
 import datetime
+import io
 import re
 import tempfile
 import base64
@@ -285,4 +286,59 @@ async def changeDetails(data: dict):
 
     except Exception as e:
         print("Error:", e)
+        raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
+
+
+@router.post("/selfCamera")
+async def receive_image(data: dict):
+    try:
+        userId = ObjectId(get_current_user(data['token']))
+        encoded_image = data['base64Image']
+        detect = False
+        image_data = base64.b64decode(encoded_image)
+
+        image = Image.open(io.BytesIO(image_data))
+        rotated_image = image.rotate(90, expand=True)
+        buffer = io.BytesIO()
+        rotated_image.save(buffer, format="JPEG")
+        buffer.seek(0)
+
+        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as file:
+            file.write(buffer.read())
+            file_path = file.name
+
+        # Upload to Cloudinary
+        response = upload(file_path, folder="your_folder_name")  # specify your folder name
+        image_url = response.get("url")
+        os.remove(file_path)
+        rotateImg = np.array(rotated_image)
+        predTuple = classify(rotateImg)
+
+        if predTuple[1] > 50:
+            detect = True
+
+        update_result = collection.update_one(
+            {"_id": userId},
+            {
+                "$push": {
+                    "images": {
+                        "url": image_url,
+                        "description": f"Result: {predTuple[0]}, confidence: {predTuple[1]}%",
+                        "uploaded": datetime.date.today().isoformat(),
+                        "isDetected": detect,
+                        "isManual": True
+                    }
+                }
+            }
+        )
+
+        if update_result.modified_count == 0:
+            return {"message": "Failed to update the database"}
+
+        return {
+            'Result': predTuple[0],
+            'confidence': float(predTuple[1])
+        }
+
+    except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
