@@ -58,6 +58,11 @@ const HomePage = () => {
     navigation.navigate('History');
   }
 
+  async function HandleSelfCamera() {
+
+    navigation.navigate('Camera');
+  }
+
 
   return (
       <View style={styles.container}>
@@ -76,6 +81,7 @@ const HomePage = () => {
         <HomeButtons
                 Live = {() => navigation.navigate('LiveCamera', { user })}
                 History = {handleHistory}
+                SelfCamera = {HandleSelfCamera}
 
         />
 

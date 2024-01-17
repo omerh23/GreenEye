@@ -5,7 +5,7 @@ import { Icon } from 'react-native-elements'
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
-const HomeButtons = ({Live, History}) => {
+const HomeButtons = ({Live, History,SelfCamera}) => {
 
     return (
         <View style={styles.buttonContainer1}>
@@ -17,9 +17,9 @@ const HomeButtons = ({Live, History}) => {
                 <FontAwesomeIcon name="file-text" size={35} color="black" />
                 <Text style={styles.buttonTextt}>History</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button1}>
-                {/*<EntypoIcon name="login" size={35} color="black" />*/}
-                <Text style={styles.buttonTextt}>Button 3</Text>
+            <TouchableOpacity style={styles.button1} onPress={SelfCamera}>
+                <EntypoIcon name="camera" size={35} color="black" />
+                <Text style={styles.buttonTextt}>Camera</Text>
             </TouchableOpacity>
         </View>
     );
