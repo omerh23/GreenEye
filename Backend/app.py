@@ -52,11 +52,11 @@ def read_file_as_image(data) -> np.ndarray:
 
 @router.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    if not file.filename.lower().endswith((".jpg", ".jpeg")):
-        return {
-            'class': "Error, support only JPG images",
-            'confidence': 1
-        }
+    # if not file.filename.lower().endswith((".jpg", ".jpeg")):
+    #     return {
+    #         'class': "Error, support only JPG images",
+    #         'confidence': 1
+    #     }
 
     image = read_file_as_image(await file.read())
     predTuple = classify(image)
