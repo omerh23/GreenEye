@@ -45,14 +45,15 @@ const CameraView = () => {
             const photo = await camera.current.takePhoto()
 
             setImageSource(`file://${photo.path}`);
-
+            setImageDetails("waiting for results..");
             const base64Image = await RNFS.readFile(photo.path, 'base64');
             const response = await axios.post('http://10.0.2.2:8000/selfCamera', {base64Image,token});
             console.log('Image uploaded successfully:', response.data);
-            setImageSource("");
+            //setImageSource("");
             const { Result: className, confidence } = response.data;
-            const detailString = `Result: ${className}, Confidence: ${confidence}%`;
+            const detailString = `Result: ${className}\nConfidence: ${confidence}%`;
             setImageDetails(detailString);
+            console.log(detailString);
         }
         catch (e){
             console.error('Error fetching data:', e);
@@ -77,7 +78,8 @@ const CameraView = () => {
 
                 />
                 <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-                    <EntypoIcon name="cross" size={40} color="#2a7312" />
+                    <EntypoIcon name="arrow-long-right" size={40} color="#2a7312" />
+                    <Text style={styles.buttonText2}>Home </Text>
                 </TouchableOpacity>
             </View>
 
@@ -85,7 +87,6 @@ const CameraView = () => {
             <TouchableOpacity style={styles.captureButton} onPress={HandlePhoto}>
                 <EntypoIcon name="camera" size={40} color="#2a7312" />
                 <Text style={styles.buttonText2}>Take screenshot </Text>
-                <Text style={styles.result}>{imageDetails}</Text>
             </TouchableOpacity>
             {imageSource ? (
                 <View style={styles.previewContainer}>
@@ -96,15 +97,18 @@ const CameraView = () => {
                         resizeMode="cover"
                     />
 
-                    <TouchableOpacity style={styles.captureButton} onPress={closeCapture}>
+                    <TouchableOpacity style={styles.CloseCaptureButton} onPress={closeCapture}>
                         <EntypoIcon name="cross" size={40} color="#2a7312" />
                     </TouchableOpacity>
+                    <Text style={styles.result}>{imageDetails}</Text>
+
                 </View>
             ) : null}
         </View>
     );
 };
 const SCREEN_WIDTH = Dimensions.get("screen").width;
+const SCREEN_HEIGHT = Dimensions.get("screen").height;
 
 const styles = StyleSheet.create({
     container: {
@@ -123,29 +127,52 @@ const styles = StyleSheet.create({
     closeButton: {
         position: 'absolute',
         top: 16,
-        right: 16,
+        right: 5,
     },
     previewContainer: {
-        flex: 1,
-        justifyContent: "center",
+        //flex: 1,
+        //justifyContent: "center",
         alignItems: "center",
+        position: "relative",
+        //marginTop:60,
+
     },
-    previewImage: { width: 200, height: 200 },
+    previewImage: {
+        width: 300,
+        height: 300,
+        borderRadius:10,
+
+    },
     buttonText2: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#2a7312',
+
     },
     captureButton: {
         alignItems: 'center',
-        position: 'relative',
+        position: 'absolute',
         color: 'green',
-        marginTop: 10,
+        //marginTop: 10,
+        bottom: 40,
+    },
+    CloseCaptureButton: {
+        alignItems: 'center',
+        position: 'absolute',
+        color: 'green',
+        //marginTop: 10,
+        top: 20,
     },
     result: {
-        marginTop: 20,
-        fontSize: 16,
-        color: "black",
+        fontSize: 25,
+        color: "#2a7312",
+        position: "absolute",
+        bottom: 0,
+        backgroundColor: "white",
+        width:300,
+        fontFamily: "Roboto",
+        fontWeight:"bold",
+        borderRadius:5,
     }
 
 
