@@ -55,7 +55,7 @@ const LiveCameraScreen = () => {
                     })
                         .then(response => {
                             console.log('Image uploaded successfully:', response.data);
-                            setUri("");
+                            //setUri("");
                             const { Result: className, confidence } = response.data;
                             const detailString = `Result: ${className}, Confidence: ${confidence}%`;
                             setImageDetails(detailString);
@@ -84,6 +84,7 @@ const LiveCameraScreen = () => {
 
     function closeCapture() {
         setUri("");
+        setImageDetails("");
     }
 
     return (
@@ -122,7 +123,7 @@ const LiveCameraScreen = () => {
             )}
             {uri ? (
                 <View style={styles.previewContainer}>
-                    <Text>Preview</Text>
+                    <Text style={styles.buttonText2}>Preview</Text>
                     <Image
                         source={{ uri: uri }}
                         style={styles.previewImage}
