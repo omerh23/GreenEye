@@ -90,7 +90,8 @@ async def register_validation(data: dict):
         "email": data['email'],
         "password": hashed_password.decode('utf-8'),
         "images": [],
-        "cameraUrl": 'None'
+        "cameraUrl": 'None',
+        "fcmToken": data['fcmToken']
     })
 
     return {"status": "success"}

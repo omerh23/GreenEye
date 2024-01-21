@@ -20,6 +20,12 @@ from pydantic import BaseModel
 import requests
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import cv2
+import firebase_admin
+from firebase_admin import credentials, messaging
+
+cred = credentials.Certificate("./private.json")
+firebase_admin.initialize_app(cred)
+
 
 scheduler = AsyncIOScheduler()
 
@@ -408,9 +414,28 @@ def identificationExplore():
             else:
                 print(f"success with user {user['username']}")
 
+                # Send Notification
+                fcm_token = user['fcmToken']
+                if fcm_token:
+                    # Create a message for FCM
+                    message = messaging.Message(
+                        notification=messaging.Notification(
+                            title="Alert",
+                            body=f"Result: {predTuple[0]}, confidence: {predTuple[1]}%"
+                        ),
+                        token=fcm_token
+                    )
+
+                    # Send the message
+                    response = messaging.send(message)
+                    print('Successfully sent message:', response)
+                else:
+                    print(f"No FCM token for user {user['username']}")
+
 
 @router.on_event("startup")
 async def start_scheduler():
     # Schedule the function to run every 5 seconds
-    scheduler.add_job(identificationExplore, 'interval', hours=3)
+    scheduler.add_job(identificationExplore, 'interval', hours=5)
+    #scheduler.add_job(identificationExplore, 'interval', seconds=10)
     scheduler.start()

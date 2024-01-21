@@ -10,6 +10,7 @@ import {useNavigation} from "@react-navigation/native";
 import {styles} from "./login";
 import axios from "axios";
 import Modal from 'react-native-modal'; // Import the modal component
+import messaging from '@react-native-firebase/messaging';
 
 
 const Register = () => {
@@ -30,18 +31,20 @@ const Register = () => {
         setDetailMessage('')
     };
 
+
     const handleRegister = async () => {
         try {
             setEmailBorder('#2a7312');
             setPasswordBorder('#2a7312');
-
-            const res = await axios.post('http://10.0.2.2:8000/register', { password, confirmPassword, username, email });
+            const fcmToken = await messaging().getToken();
+            const res = await axios.post('http://10.0.2.2:8000/register', { password, confirmPassword, username, email,fcmToken});
             console.log(res.data.status);
 
             if (res.data.status === 'success') {
                 setDetailMessage('')
                 setSuccessModalVisible(true); // Show the success modal
                 console.log('Register success');
+
             }
 
             else if (res.data.status === 'invalid_email') {
