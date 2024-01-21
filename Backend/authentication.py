@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from pymongo import MongoClient
 import jwt
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 load_dotenv()
 mongodb_url = os.getenv("MONGODB_URL")
 db_url = os.getenv("DB")
@@ -87,7 +89,8 @@ async def register_validation(data: dict):
         "username": data['username'],
         "email": data['email'],
         "password": hashed_password.decode('utf-8'),
-        "images": []
+        "images": [],
+        "cameraUrl": 'None'
     })
 
     return {"status": "success"}

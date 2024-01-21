@@ -18,6 +18,10 @@ from cloudinary.uploader import upload
 import cloudinary
 from pydantic import BaseModel
 import requests
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import cv2
+
+scheduler = AsyncIOScheduler()
 
 load_dotenv()
 router = APIRouter()
@@ -342,3 +346,71 @@ async def receive_image(data: dict):
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
+
+
+def capture_frame(camera_url):
+    # Connect to the camera using OpenCV
+    cap = cv2.VideoCapture(camera_url)
+
+    # Check if the camera is opened successfully
+    if not cap.isOpened():
+        print("Error: Could not open camera")
+        return None
+
+    # Read a frame from the camera
+    ret, frame = cap.read()
+
+    # Release the VideoCapture object
+    cap.release()
+
+    if ret:
+        # Frame captured successfully
+        return frame
+    else:
+        print("Error: Could not read frame")
+        return None
+
+def identificationExplore():
+    for user in collection.find():
+        cameraUrl = user['cameraUrl']
+        frame = capture_frame(cameraUrl)
+        predTuple = classify(frame)
+        if predTuple[0] != 'No identify' and predTuple[1] > 50:
+        #if predTuple[1] > 20:
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as file:
+                file_path = file.name
+            # Write frame to the temporary file using OpenCV
+            cv2.imwrite(file_path, frame)
+
+            # Upload to Cloudinary
+            response = upload(file_path, folder="your_folder_name")  # specify your folder name
+            image_url = response.get("url")
+            os.remove(file_path)
+
+            update_result = collection.update_one(
+                {"_id": user['_id']},
+                {
+                    "$push": {
+                        "images": {
+                            "url": image_url,
+                            # "url": upload_response['url'],
+                            "description": f"Result: {predTuple[0]}, confidence: {predTuple[1]}%",
+                            "uploaded": datetime.date.today().isoformat(),
+                            "isDetected": True,
+                            "isManual": False
+                        }
+                    }
+                }
+            )
+
+            if update_result.modified_count == 0:
+                return {"message": "Failed to update the database"}
+            else:
+                print(f"success with user {user['username']}")
+
+
+@router.on_event("startup")
+async def start_scheduler():
+    # Schedule the function to run every 5 seconds
+    scheduler.add_job(identificationExplore, 'interval', hours=3)
+    scheduler.start()
