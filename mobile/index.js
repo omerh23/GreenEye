@@ -5,7 +5,16 @@ import PushNotification from "react-native-push-notification";
 import messaging from "@react-native-firebase/messaging";
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-    console.log('Message handled in the background!', remoteMessage);
+    PushNotification.localNotification({
+        channelId: "1",
+        title: "Identify alert",
+        message: remoteMessage.notification.body,
+        playSound: true,
+        soundName: 'default',
+        priority: 'high',
+        popInitialNotification: true,
+
+    });
 });
 AppRegistry.registerComponent(appName, () => App);
 
