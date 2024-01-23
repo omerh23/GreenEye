@@ -11,7 +11,7 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 from pymongo import MongoClient
-from Backend.authentication import get_current_user
+from authentication import get_current_user
 from yolo.yolo import classify
 import os
 from cloudinary.uploader import upload
