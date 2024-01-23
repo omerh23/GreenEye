@@ -3,24 +3,16 @@ import {
   ImageBackground,
   View,
   Text,
-  Image,
   StyleSheet,
-  TouchableOpacity,
+
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import PushNotification from "react-native-push-notification";
 import Sidebar from "../Sidebar";
-import axios from "axios";
 import HomeButtons from "./homeButtons";
-import LiveCameraScreen from "./liveCamera";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {fetchUserData} from "../userUtils";
 import Logo from "./logo";
-// const Button = ({text, onPress}) => (
-//     <TouchableOpacity style={styles.button} onPress={onPress}>
-//       <Text style={styles.buttonText}>{text}</Text>
-//     </TouchableOpacity>
-// );
+
 
 
 const HomePage = () => {
@@ -38,20 +30,6 @@ const HomePage = () => {
     getUserData();
   }, );
 
-  const sendNotification = (buttonIndex) => {
-    if (sidebarVisible){
-      setSidebarVisible(false)
-    }
-    else{
-      PushNotification.localNotification({
-        channelId: "1",
-        title: "Button Pressed",
-        message: `Button ${buttonIndex} was pressed!`,
-        playSound: true,
-        soundName: 'default',
-      }   );
-    }
-  };
 
   async function handleHistory() {
 

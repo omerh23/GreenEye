@@ -53,7 +53,7 @@ const Settings = () => {
         setNewPasswordBorder('#2a7312');
         setDetailMessage('');
         setColorDetails('red');
-        const res = await axios.post('http://10.0.2.2:8000/changeDetails',{token,username
+        const res = await axios.post('https://backend-greeneye.onrender.com/changeDetails',{token,username
         ,email,oldPassword,newPassword,cameraUrl});
         console.log(res.data.status);
 

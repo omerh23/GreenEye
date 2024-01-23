@@ -158,7 +158,7 @@ export const ImageUpload = () => {
       formData.append("file", selectedFile);
       let res = await axios({
         method: "post",
-        url: 'http://localhost:8000/predict', // Update this URL
+        url: 'https://backend-greeneye.onrender.com/predict', // Update this URL
         data: formData,
       });
       if (res.status === 200) {

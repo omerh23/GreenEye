@@ -27,9 +27,11 @@ const Login = () => {
       setDetailMessage('');
       setColorDetails('#2a7312');
       setDetailMessage('Loading please wait..');
-      const res = await axios.post('http://10.0.2.2:8000/login', { email, password }, {
-        timeout: 10000
-      });
+      const res = await axios.post('https://backend-greeneye.onrender.com/login',
+          { email,
+                  password
+                },
+          {timeout:50000});
 
       if (res.data.status === 'success') {
         setDetailMessage('');
@@ -63,6 +65,7 @@ const Login = () => {
         //console.error('Request timed out. Please try again.');
         setColorDetails('red');
         setDetailMessage('No response from server');
+        console.error(error);
       } else {
         console.error('Error:', error.message);
       }

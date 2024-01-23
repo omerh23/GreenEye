@@ -37,7 +37,7 @@ const History = () => {
             setManualDetectionButton(false);
             setHistoryDetectionButton(false);
             setIsLoading(true);
-            const res = await axios.post('http://10.0.2.2:8000/latestHistory', {token});
+            const res = await axios.post('https://backend-greeneye.onrender.com/latestHistory', {token});
             setData(res.data);
         }catch (error) {
             console.error('Error fetching data:', error);
@@ -54,7 +54,7 @@ const History = () => {
             setLatestHistoryButton(false);
             setHistoryDetectionButton(false);
             setIsLoading(true);
-            const res = await axios.post('http://10.0.2.2:8000/manualDetection', {token});
+            const res = await axios.post('https://backend-greeneye.onrender.com/manualDetection', {token});
             setData(res.data);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -69,7 +69,7 @@ const History = () => {
             setLatestHistoryButton(false);
             setManualDetectionButton(false);
             setIsLoading(true);
-            const res = await axios.post('http://10.0.2.2:8000/detectionHistory', {token});
+            const res = await axios.post('https://backend-greeneye.onrender.com/detectionHistory', {token});
             setData(res.data);
         }catch (error) {
             console.error('Error fetching data:', error);

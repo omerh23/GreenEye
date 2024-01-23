@@ -49,7 +49,7 @@ const LiveCameraScreen = () => {
             RNFS.readFile(uri, 'base64')
                 .then(base64String => {
                     // Send the base64 string to the server
-                     axios.post('http://10.0.2.2:8000/manualCapture', {
+                     axios.post('https://backend-greeneye.onrender.com/manualCapture', {
                         imageUri: `data:image/png;base64,${base64String}`,
                         token:token
                     })
