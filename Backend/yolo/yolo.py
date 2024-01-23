@@ -22,8 +22,8 @@ def classify(image_to_classify):
     model.overrides['max_det'] = 1000  # maximum number of detections per image
     im = Image.fromarray(image_to_classify)
     yolo_results = model.predict(im)
-    render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
-    render.show()
+    #render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
+    #render.show()
 
     yolo_boxes = yolo_results[0].boxes.xyxy.tolist()
 

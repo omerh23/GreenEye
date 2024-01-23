@@ -56,7 +56,7 @@ async def login_validation(data: dict):
                 "user_id": str(existing_user['_id']),
                 "exp": expiration_date
             }
-
+            print(algo)
             token = jwt.encode(token_data, current_key, algorithm=algo)
 
             return {"status": "success", "user": existing_user, "token": token}
