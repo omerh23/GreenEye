@@ -55,11 +55,7 @@ cloudImages = cloudinary.config(
 app.include_router(auth_router)
 app.include_router(app_router)
 
-# run on Render server
-# if __name__ == "__main__":
-#     uvicorn.run(app, host='0.0.0.0', port=8000)
 
-# run on localhost
 if __name__ == "__main__":
     key = generate_secret_key()
     with open(".env", "r") as file:
@@ -70,4 +66,5 @@ if __name__ == "__main__":
     with open(".env", "a") as file:
         file.write(f"SECRET_KEY={key}\n")
 
-    uvicorn.run(app, host='localhost', port=8000)
+    #uvicorn.run(app, host='localhost', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8000)

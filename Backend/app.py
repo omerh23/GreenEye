@@ -6,7 +6,7 @@ import base64
 import bcrypt
 from bson import ObjectId
 from dotenv import load_dotenv
-from fastapi import UploadFile, File, APIRouter, HTTPException, Depends
+from fastapi import UploadFile, File, APIRouter, HTTPException
 import numpy as np
 from io import BytesIO
 from PIL import Image

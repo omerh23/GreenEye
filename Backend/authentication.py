@@ -1,14 +1,13 @@
 import os
 import cloudinary
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException
 import re
 import bcrypt
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from pymongo import MongoClient
 import jwt
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 load_dotenv()
 mongodb_url = os.getenv("MONGODB_URL")
