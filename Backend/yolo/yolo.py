@@ -6,13 +6,13 @@ import os
 def classify(image_to_classify):
     # load model
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_directory, 'runs/detect/train/weights/best_egg.pt')
+    model_path = os.path.join(script_directory, 'runs/detect/train/weights/eggplantWithLeaves.pt')
     model = YOLO(model_path)
 
     # labels = ["Potato_healthy", "Potato_early_blight", "Potato_late_blight",
     #           "Tomato_healthy", "Tomato_early_blight", "Tomato_late_blight"]
 
-    labels = ['Fruit Rot', 'Fruit borer', 'Healthy Eggplant', 'Melon Thrips']
+    labels = ['Fruit Rot', 'Fruit borer', 'Healthy Eggplant', 'Melon Thrips','Healthy leaf']
 
     predictDic = {label: (0, 0) for label in labels}
 

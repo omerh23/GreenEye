@@ -381,8 +381,8 @@ def identificationExplore():
         cameraUrl = user['cameraUrl']
         frame = capture_frame(cameraUrl)
         predTuple = classify(frame)
-        if predTuple[0] != 'No identify' and predTuple[1] > 50:
-        #if predTuple[1] > 20:
+        #if predTuple[0] != 'No identify' and predTuple[1] > 50:
+        if predTuple[1] > 20:
             with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as file:
                 file_path = file.name
             # Write frame to the temporary file using OpenCV
@@ -436,6 +436,6 @@ def identificationExplore():
 @router.on_event("startup")
 async def start_scheduler():
     # Schedule the function to run every 5 seconds
-    scheduler.add_job(identificationExplore, 'interval', hours=5)
-    #scheduler.add_job(identificationExplore, 'interval', seconds=10)
+    #scheduler.add_job(identificationExplore, 'interval', hours=5)
+    scheduler.add_job(identificationExplore, 'interval', seconds=200)
     scheduler.start()

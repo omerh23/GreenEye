@@ -21,9 +21,9 @@ collection = db[db_url]
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 cloudinary.config(
-    cloud_name="dhd8azxmx",
-    api_key="111939238442859",
-    api_secret="ces7ll20zEYM1lp1C4CYt8BEIUQ"
+    cloud_name=os.getenv("CLOUD_NAME"),
+    api_key=os.getenv("API_KEY"),
+    api_secret=os.getenv("API_SECRET"),
 )
 
 
