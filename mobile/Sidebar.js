@@ -1,7 +1,6 @@
 // Sidebar.js
-import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import React, {useState} from "react";
-import { Icon } from 'react-native-elements'
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {useNavigation} from "@react-navigation/native";
 
@@ -29,6 +28,11 @@ const Sidebar = () => {
         setButtonPressed(false);
         navigation.navigate('Settings');
 
+    }
+
+    function HandleAboutUs() {
+        setButtonPressed(false);
+        navigation.navigate('AboutUs');
     }
 
     return (
@@ -70,7 +74,7 @@ const Sidebar = () => {
                         <Text>Feedback</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.sidebarbuttons} >
+                    <TouchableOpacity style={styles.sidebarbuttons} onPress={HandleAboutUs} >
                         <EntypoIcon name="slideshare" size={35} color="black" />
                         <Text>About us</Text>
                     </TouchableOpacity>

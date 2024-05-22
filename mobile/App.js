@@ -9,8 +9,8 @@ import LiveCameraScreen from "./Home/liveCamera";
 import History from "./Home/history";
 import Settings from "./sidebarComponents/settings";
 import CameraView from "./Home/cameraView";
+import About from "./sidebarComponents/about";
 import messaging from "@react-native-firebase/messaging";
-import {Alert} from "react-native";
 import PushNotification from "react-native-push-notification";
 
 const Stack = createNativeStackNavigator();
@@ -41,6 +41,8 @@ const App = () => {
                 <Stack.Screen name="History" component={History} />
                 <Stack.Screen name="Settings" component={Settings} />
                 <Stack.Screen name="Camera" component={CameraView} />
+                <Stack.Screen name="AboutUs" component={About} />
+
 
             </Stack.Navigator>
         </NavigationContainer>
