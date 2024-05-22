@@ -10,8 +10,12 @@ import History from "./Home/history";
 import Settings from "./sidebarComponents/settings";
 import CameraView from "./Home/cameraView";
 import About from "./sidebarComponents/about";
+import Feedback from "./sidebarComponents/feedback";
 import messaging from "@react-native-firebase/messaging";
 import PushNotification from "react-native-push-notification";
+import Terms from "./sidebarComponents/terms";
+import Guide from "./sidebarComponents/guide";
+
 
 const Stack = createNativeStackNavigator();
 const App = () => {
@@ -33,7 +37,7 @@ const App = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+            <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="Home" component={HomePage} />
                 <Stack.Screen name="Register" component={Register} />
@@ -42,6 +46,10 @@ const App = () => {
                 <Stack.Screen name="Settings" component={Settings} />
                 <Stack.Screen name="Camera" component={CameraView} />
                 <Stack.Screen name="AboutUs" component={About} />
+                <Stack.Screen name="Feedback" component={Feedback} />
+                <Stack.Screen name="Terms" component={Terms} />
+                <Stack.Screen name="Guide" component={Guide} />
+
 
 
             </Stack.Navigator>

@@ -35,6 +35,21 @@ const Sidebar = () => {
         navigation.navigate('AboutUs');
     }
 
+    function HandleFeedback() {
+        setButtonPressed(false);
+        navigation.navigate('Feedback');
+    }
+
+    function HandleTerms() {
+        setButtonPressed(false);
+        navigation.navigate('Terms');
+    }
+
+    function HandleGuide() {
+        setButtonPressed(false);
+        navigation.navigate('Guide');
+    }
+
     return (
         <View style={styles.container}>
 
@@ -54,7 +69,7 @@ const Sidebar = () => {
                         <Text>Logout</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.sidebarbuttons} >
+                    <TouchableOpacity style={styles.sidebarbuttons} onPress={HandleGuide}>
                         <EntypoIcon name="book" size={35} color="black" />
                         <Text>Guide</Text>
                     </TouchableOpacity>
@@ -64,12 +79,12 @@ const Sidebar = () => {
                         <Text>Settings</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.sidebarbuttons} >
+                    <TouchableOpacity style={styles.sidebarbuttons} onPress={HandleTerms}>
                         <EntypoIcon name="layers" size={35} color="black" />
                         <Text>T&P</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.sidebarbuttons} >
+                    <TouchableOpacity style={styles.sidebarbuttons} onPress={HandleFeedback}>
                         <EntypoIcon name="megaphone" size={35} color="black" />
                         <Text>Feedback</Text>
                     </TouchableOpacity>

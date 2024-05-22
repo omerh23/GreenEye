@@ -33,17 +33,6 @@ export const styles = StyleSheet.create({
         padding: 20,
     },
     form: {
-        // backgroundColor: 'rgba(255, 255, 255, 0.7)',
-        // padding: 25,
-        // shadowColor: 'black',
-        // shadowOffset: {
-        //     width: 1,
-        //     height: 2,
-        // },
-        // shadowOpacity: 0.25,
-        // shadowRadius: 4,
-        // elevation: 5,
-        // borderRadius: 10,
          marginTop: 100,
          justifyContent: 'center',
          alignItems: 'center',
