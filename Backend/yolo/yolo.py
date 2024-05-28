@@ -6,14 +6,13 @@ import os
 def classify(image_to_classify):
     # load model
     script_directory = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_directory, 'runs/detect/train/weights/eggplantWithLeaves.pt')
+    model_path = os.path.join(script_directory, 'runs/detect/train6/weights/best.pt')
     model = YOLO(model_path)
 
     # labels = ["Potato_healthy", "Potato_early_blight", "Potato_late_blight",
     #           "Tomato_healthy", "Tomato_early_blight", "Tomato_late_blight"]
 
-    labels = ['Fruit Rot', 'Fruit borer', 'Healthy Eggplant', 'Melon Thrips','Healthy leaf']
-
+    labels = ['Healthy','Sick']
     predictDic = {label: (0, 0) for label in labels}
 
     model.overrides['conf'] = 0.25  # NMS confidence threshold
@@ -22,8 +21,8 @@ def classify(image_to_classify):
     model.overrides['max_det'] = 1000  # maximum number of detections per image
     im = Image.fromarray(image_to_classify)
     yolo_results = model.predict(im)
-    #render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
-    #render.show()
+    render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
+    render.show()
 
     yolo_boxes = yolo_results[0].boxes.xyxy.tolist()
 

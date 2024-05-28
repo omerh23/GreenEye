@@ -29,8 +29,8 @@ def copy_matching_pictures(pictures_folder, texts_folder, output_folder):
             print(unmatched_file)
 
 # Set the paths for your Pictures and Texts folders
-pictures_path = r"C:\Users\omerh\Desktop\dataset\datasets\mixed 2\Potato__late_blight"
-texts_path = r"C:\Users\omerh\Desktop\obj_train_data"
-output_path = r"C:\Users\omerh\Desktop\n"
+pictures_path = r"C:\Users\omerh\Desktop\Session1"
+texts_path = r"C:\Users\omerh\Desktop\classify\labels"
+output_path = r"C:\Users\omerh\Desktop\classify\images"
 
 copy_matching_pictures(pictures_path, texts_path, output_path)

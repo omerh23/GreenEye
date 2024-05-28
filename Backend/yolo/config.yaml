@@ -1,8 +1,8 @@
-path: C:/Users/omerh/Desktop/train_leaves  # dataset root dir
+path: C:\Users\omerh\Desktop\new_tests  # dataset root dir
 
 train: train/images  # train images (relative to 'path')
-val: valid/images  # val images (relative to 'path')
-test: test/images
+val: test/images  # val images (relative to 'path')
+#test: test/images
 
 transforms:
   rotate: 0.3  # Probability of rotation
@@ -11,9 +11,5 @@ transforms:
   contrast: 0.2    # Probability of changing contrast
 
 names:
-  0: potato_healthy
-  1: potato_early_blight
-  2: potato_late_blight
-  3: tomato_healthy
-  4: tomato_early_blight
-  5: tomato_late_blight
+  0: Healthy
+  1: Sick

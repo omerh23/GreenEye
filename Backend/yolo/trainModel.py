@@ -10,5 +10,5 @@ model.overrides['flipud'] = 0.5
 model.overrides['fliplr'] = 0.5
 
 # Use the model
-results = model.train(data="config.yaml", epochs=50)  # train the model
+results = model.train(data="config.yaml", epochs=35)  # train the model
 
