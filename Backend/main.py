@@ -75,4 +75,4 @@ with open(".env", "a") as file:
 #         file.write(f"SECRET_KEY={key}\n")
 #
 #     uvicorn.run(app, host='localhost', port=8000)
-#     uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8000)
