@@ -64,6 +64,8 @@ with open(".env", "w") as file:
 with open(".env", "a") as file:
     file.write(f"SECRET_KEY={key}\n")
 
+#uvicorn.run(app, host='0.0.0.0', port=8000)
+
 # if __name__ == "__main__":
 #     key = generate_secret_key()
 #     with open(".env", "r") as file:
@@ -75,4 +77,3 @@ with open(".env", "a") as file:
 #         file.write(f"SECRET_KEY={key}\n")
 #
 #     uvicorn.run(app, host='localhost', port=8000)
-    uvicorn.run(app, host='0.0.0.0', port=8000)
