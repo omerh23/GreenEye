@@ -8,9 +8,7 @@ def classify(image_to_classify):
     script_directory = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(script_directory, 'runs/detect/train6/weights/best.pt')
     model = YOLO(model_path)
-
-    # labels = ["Potato_healthy", "Potato_early_blight", "Potato_late_blight",
-    #           "Tomato_healthy", "Tomato_early_blight", "Tomato_late_blight"]
+    foundSickLeaves = False
 
     labels = ['Healthy','Sick']
     predictDic = {label: (0, 0) for label in labels}
@@ -36,10 +34,16 @@ def classify(image_to_classify):
         x_min, y_min, x_max, y_max = box
         class_label = labels[int(class_index)]
         predictDic[class_label] = (predictDic[class_label][0] + 1, predictDic[class_label][1] + confidence)
-
+        if class_label == 'Sick':
+            foundSickLeaves = True
         print(
             f"Detected {class_label} with confidence {confidence:.2f} at coordinates: ({x_min}, {y_min}, {x_max}, {y_max})")
 
-    max_label = max(predictDic, key=lambda k: predictDic[k][0])
+    if foundSickLeaves:
+        max_label = 'Sick'
+    else:
+        max_label = 'Healthy'
+
+    max_label1 = max(predictDic, key=lambda k: predictDic[k][0])
     avg_confidence = predictDic[max_label][1] / predictDic[max_label][0] if predictDic[max_label][0] > 0 else 1
     return max_label, round(avg_confidence*100, 2)
