@@ -39,6 +39,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/login")
 async def login_validation(data: dict):
+    print("Try login...")
     # Check for empty fields
     if not all(data.values()):
         return {"status": "empty_fields"}
