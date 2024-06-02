@@ -12,9 +12,10 @@ const CameraView = () => {
     const { hasPermission, requestPermission } = useCameraPermission();
     const device = useCameraDevice('front');
     const navigation = useNavigation();
-    const [imageSource, setImageSource] =useState('');
+    const [imageSource, setImageSource] = useState('');
     const [token, setToken] = useState(null);
     const [imageDetails, setImageDetails] = useState("");
+    const [isImageFromCls,setIsImageFromCls] = useState(false);
 
     useEffect(() => {
         const initializeCamera = async () => {
@@ -38,62 +39,64 @@ const CameraView = () => {
     };
 
     async function HandlePhoto() {
-
         try {
             setImageDetails('');
 
-            const photo = await camera.current.takePhoto()
+            const photo = await camera.current.takePhoto();
 
             setImageSource(`file://${photo.path}`);
             setImageDetails("waiting for results..");
             const base64Image = await RNFS.readFile(photo.path, 'base64');
-            const response = await axios.post('https://backend-greeneye.onrender.com/selfCamera', {base64Image,token});
+            //const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token });
+            const response = await axios.post('https://backend-greeneye.onrender.com\n/selfCamera', { base64Image, token });
             console.log('Image uploaded successfully:', response.data);
-            //setImageSource("");
-            const { Result: className, confidence } = response.data;
-            const detailString = `Result: ${className}\nConfidence: ${confidence}%`;
+            const { label, confidence, image } = response.data;
+            const detailString = `Result: ${label}\nConfidence: ${confidence}%`;
             setImageDetails(detailString);
+
+            if (image) {
+                setImageSource(`data:image/jpeg;base64,${image}`);
+                setIsImageFromCls(true);
+
+            }
+
             console.log(detailString);
-        }
-        catch (e){
+        } catch (e) {
             console.error('Error fetching data:', e);
         }
     }
 
     function closeCapture() {
         setImageSource('');
+        setIsImageFromCls(false);
     }
 
     return (
         <View style={styles.container}>
-
-
             <View style={styles.cameraContainer}>
                 <Camera
                     ref={camera}
-                   style={styles.cameraStyle}
+                    style={styles.cameraStyle}
                     device={device}
                     isActive={true}
                     photo={true}
-
                 />
                 <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
                     <EntypoIcon name="arrow-long-right" size={40} color="#2a7312" />
-                    <Text style={styles.buttonText2}>Home </Text>
+                    <Text style={styles.buttonText2}>Home</Text>
                 </TouchableOpacity>
             </View>
 
-
             <TouchableOpacity style={styles.captureButton} onPress={HandlePhoto}>
                 <EntypoIcon name="camera" size={40} color="#2a7312" />
-                <Text style={styles.buttonText2}>Take screenshot </Text>
+                <Text style={styles.buttonText2}>Take screenshot</Text>
             </TouchableOpacity>
             {imageSource ? (
                 <View style={styles.previewContainer}>
                     <Text style={styles.buttonText2}>Preview</Text>
                     <Image
                         source={{ uri: imageSource }}
-                        style={[styles.previewImage, { transform: [{ rotate: '-90deg' }] }]}
+                        style={[styles.previewImage, !isImageFromCls ? { transform: [{ rotate: '-90deg' }] } : {}]}
                         resizeMode="cover"
                     />
 
@@ -101,12 +104,12 @@ const CameraView = () => {
                         <EntypoIcon name="cross" size={40} color="#2a7312" />
                     </TouchableOpacity>
                     <Text style={styles.result}>{imageDetails}</Text>
-
                 </View>
             ) : null}
         </View>
     );
 };
+
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 const SCREEN_HEIGHT = Dimensions.get("screen").height;
 
@@ -118,8 +121,6 @@ const styles = StyleSheet.create({
     cameraContainer: {
         width: SCREEN_WIDTH,
         height: 400,
-        //overflow: 'hidden', // This ensures the camera feed does not spill outside the container
-
     },
     cameraStyle: {
         flex: 1,
@@ -130,37 +131,27 @@ const styles = StyleSheet.create({
         right: 5,
     },
     previewContainer: {
-        //flex: 1,
-        //justifyContent: "center",
         alignItems: "center",
         position: "relative",
-        //marginTop:60,
-
     },
     previewImage: {
         width: 300,
         height: 300,
-        borderRadius:10,
-
+        borderRadius: 10,
     },
     buttonText2: {
         fontSize: 16,
         fontWeight: 'bold',
         color: '#2a7312',
-
     },
     captureButton: {
         alignItems: 'center',
         position: 'absolute',
-        color: 'green',
-        //marginTop: 10,
         bottom: 40,
     },
     CloseCaptureButton: {
         alignItems: 'center',
         position: 'absolute',
-        color: 'green',
-        //marginTop: 10,
         top: 20,
     },
     result: {
@@ -169,13 +160,11 @@ const styles = StyleSheet.create({
         position: "absolute",
         bottom: 0,
         backgroundColor: "white",
-        width:300,
+        width: 300,
         fontFamily: "Roboto",
-        fontWeight:"bold",
-        borderRadius:5,
+        fontWeight: "bold",
+        borderRadius: 5,
     }
-
-
 });
 
 export default CameraView;

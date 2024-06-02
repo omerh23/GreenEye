@@ -32,6 +32,11 @@ const Login = () => {
                   password
                 },
           {timeout:50000});
+      // const res = await axios.post('http://10.0.2.2:8000/login',
+      //     { email,
+      //       password
+      //     },
+      //     {timeout:50000});
 
       if (res.data.status === 'success') {
         setDetailMessage('');

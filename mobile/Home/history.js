@@ -37,6 +37,8 @@ const History = () => {
             setManualDetectionButton(false);
             setHistoryDetectionButton(false);
             setIsLoading(true);
+
+            //const res = await axios.post('http://10.0.2.2:8000/latestHistory', {token});
             const res = await axios.post('https://backend-greeneye.onrender.com/latestHistory', {token});
             setData(res.data);
         }catch (error) {
