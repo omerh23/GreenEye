@@ -1,3 +1,6 @@
+import base64
+import io
+
 from ultralyticsplus import YOLO, render_result
 from PIL import Image
 import os
@@ -21,11 +24,14 @@ def classify(image_to_classify):
     yolo_results = model.predict(im)
     render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
     render.show()
-
+    # Convert rendered image to base64
+    buffered = io.BytesIO()
+    render.save(buffered, format="JPEG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
     yolo_boxes = yolo_results[0].boxes.xyxy.tolist()
 
     if not yolo_boxes:
-        return 'No identify', 100
+        return {'label': 'No identify', 'confidence': 100, 'image': img_str}
 
     yolo_class_indices = yolo_results[0].boxes.cls.tolist()
     yolo_confidences = yolo_results[0].boxes.conf.tolist()
@@ -44,6 +50,6 @@ def classify(image_to_classify):
     else:
         max_label = 'Healthy'
 
-    max_label1 = max(predictDic, key=lambda k: predictDic[k][0])
     avg_confidence = predictDic[max_label][1] / predictDic[max_label][0] if predictDic[max_label][0] > 0 else 1
-    return max_label, round(avg_confidence*100, 2)
+    return {'label': max_label, 'confidence': round(avg_confidence * 100, 2), 'image': img_str}
+

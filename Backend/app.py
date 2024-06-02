@@ -63,19 +63,11 @@ def read_file_as_image(data) -> np.ndarray:
 
 @router.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    # if not file.filename.lower().endswith((".jpg", ".jpeg")):
-    #     return {
-    #         'class': "Error, support only JPG images",
-    #         'confidence': 1
-    #     }
 
     image = read_file_as_image(await file.read())
     predTuple = classify(image)
 
-    return {
-        'class': predTuple[0],
-        'confidence': float(predTuple[1])
-    }
+    return predTuple
 
 
 def load_image_to_array(image_path):
@@ -127,7 +119,7 @@ async def receive_image(data: ImageData):
         #
         # predTuple = classify(array)
 
-        if predTuple[1] > 50:
+        if predTuple['confidence'] > 50:
             detect = True
 
         update_result = collection.update_one(
@@ -137,7 +129,7 @@ async def receive_image(data: ImageData):
                     "images": {
                         "url": image_url,
                         #"url": upload_response['url'],
-                        "description": f"Result: {predTuple[0]}, confidence: {predTuple[1]}%",
+                        "description": f"Result: {predTuple['confidence']}, confidence: {predTuple['label']}%",
                         "uploaded": datetime.date.today().isoformat(),
                         "isDetected": detect,
                         "isManual": True
@@ -149,10 +141,7 @@ async def receive_image(data: ImageData):
         if update_result.modified_count == 0:
             return {"message": "Failed to update the database"}
 
-        return {
-            'Result': predTuple[0],
-            'confidence': float(predTuple[1])
-        }
+        return predTuple
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
@@ -304,13 +293,20 @@ async def receive_image(data: dict):
     try:
         userId = ObjectId(get_current_user(data['token']))
         encoded_image = data['base64Image']
-        detect = False
         image_data = base64.b64decode(encoded_image)
+
+        # name = input("Enter image name: ")
+        # image_path = rf'C:\Users\omerh\\Desktop\n\{name}.jpg'
+        # array = load_image_to_array(image_path)
+        # upload_response = upload_image_to_cloudinary(image_path)
+        # image_url = upload_response.get("url")
+        # predTuple = classify(array)
 
         image = Image.open(io.BytesIO(image_data))
         rotated_image = image.rotate(90, expand=True)
         buffer = io.BytesIO()
         rotated_image.save(buffer, format="JPEG")
+        #image.save(buffer, format="JPEG")
         buffer.seek(0)
 
         with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as file:
@@ -322,33 +318,27 @@ async def receive_image(data: dict):
         image_url = response.get("url")
         os.remove(file_path)
         rotateImg = np.array(rotated_image)
-        predTuple = classify(rotateImg)
+        predTuple = classify(np.array(rotateImg))
 
-        if predTuple[1] > 50:
-            detect = True
-
-        update_result = collection.update_one(
-            {"_id": userId},
-            {
-                "$push": {
-                    "images": {
-                        "url": image_url,
-                        "description": f"Result: {predTuple[0]}, confidence: {predTuple[1]}%",
-                        "uploaded": datetime.date.today().isoformat(),
-                        "isDetected": detect,
-                        "isManual": True
+        if predTuple['confidence'] > 50:
+            update_result = collection.update_one(
+                {"_id": userId},
+                {
+                    "$push": {
+                        "images": {
+                            "url": image_url,
+                            "description": f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%",
+                            "uploaded": datetime.date.today().isoformat(),
+                            "isDetected": True,
+                            "isManual": True
+                        }
                     }
                 }
-            }
-        )
+            )
 
-        if update_result.modified_count == 0:
-            return {"message": "Failed to update the database"}
-
-        return {
-            'Result': predTuple[0],
-            'confidence': float(predTuple[1])
-        }
+            if update_result.modified_count == 0:
+                return {"message": "Failed to update the database"}
+        return predTuple
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
@@ -383,7 +373,7 @@ def identificationExplore():
         if cameraUrl != 'None':
             frame = capture_frame(cameraUrl)
             predTuple = classify(frame)
-            if predTuple[0] != 'No identify' and predTuple[1] > 50:
+            if predTuple['label'] != 'No identify' and predTuple['confidence'] > 50:
             #if predTuple[1] > 20:
                 with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as file:
                     file_path = file.name
@@ -402,7 +392,7 @@ def identificationExplore():
                             "images": {
                                 "url": image_url,
                                 # "url": upload_response['url'],
-                                "description": f"Result: {predTuple[0]}, confidence: {predTuple[1]}%",
+                                "description": f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%",
                                 "uploaded": datetime.date.today().isoformat(),
                                 "isDetected": True,
                                 "isManual": False
@@ -423,7 +413,7 @@ def identificationExplore():
                         message = messaging.Message(
                             notification=messaging.Notification(
                                 title="Alert",
-                                body=f"Result: {predTuple[0]}, confidence: {predTuple[1]}%"
+                                body=f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%"
                             ),
                             token=fcm_token
                         )

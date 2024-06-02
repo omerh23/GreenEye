@@ -13,9 +13,6 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import { common } from '@material-ui/core/colors';
 import Clear from '@material-ui/icons/Clear';
 
-
-
-
 const ColorButton = withStyles((theme) => ({
   root: {
     color: theme.palette.getContrastText(common.white),
@@ -141,11 +138,13 @@ const useStyles = makeStyles((theme) => ({
     color: '#be6a77 !important',
   }
 }));
+
 export const ImageUpload = () => {
   const classes = useStyles();
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
   const [data, setData] = useState();
+  const [processedImage, setProcessedImage] = useState();
   const [image, setImage] = useState(false);
   const [isLoading, setIsloading] = useState(false);
   let confidence = 0;
@@ -156,11 +155,12 @@ export const ImageUpload = () => {
       formData.append("file", selectedFile);
       let res = await axios({
         method: "post",
-        url: 'https://backend-greeneye.onrender.com/predict', // Update this URL
+        url: 'http://localhost:8000/predict', // Update this URL
         data: formData,
       });
       if (res.status === 200) {
         setData(res.data);
+        setProcessedImage(`data:image/jpeg;base64,${res.data.image}`);
       }
       setIsloading(false);
     }
@@ -171,6 +171,7 @@ export const ImageUpload = () => {
     setImage(false);
     setSelectedFile(null);
     setPreview(null);
+    setProcessedImage(null);
   };
 
   useEffect(() => {
@@ -203,80 +204,88 @@ export const ImageUpload = () => {
   };
 
   if (data) {
-    confidence = (parseFloat(data.confidence) * 100).toFixed(2);
+    confidence = data.confidence;
   }
 
   return (
-    <React.Fragment>
-      <AppBar position="static" className={classes.appbar}>
-        <Toolbar>
-          <div className={classes.grow} />
-        </Toolbar>
-      </AppBar>
-      <Container maxWidth={false} className={classes.mainContainer} disableGutters={true}>
-        <Grid
-          className={classes.gridContainer}
-          container
-          direction="row"
-          justifyContent="center"
-          alignItems="center"
-          spacing={2}
-        >
-          <Grid item xs={12}>
-            <Card className={`${classes.imageCard} ${!image ? classes.imageCardEmpty : ''}`}>
-              {image && <CardActionArea>
-                <CardMedia
-                  className={classes.media}
-                  image={preview}
-                  component="image"
-                  title="Contemplative Reptile"
-                />
-              </CardActionArea>
-              }
-              {!image && <CardContent className={classes.content}>
-                <DropzoneArea
-                  acceptedFiles={['image/*']}
-                  dropzoneText={"Drag and drop an image of vine plant"}
-                  onChange={onSelectFile}
-                />
-              </CardContent>}
-              {data && <CardContent className={classes.detail}>
-                <TableContainer component={Paper} className={classes.tableContainer}>
-                  <Table className={classes.table} size="small" aria-label="simple table">
-                    <TableHead className={classes.tableHead}>
-                      <TableRow className={classes.tableRow}>
-                        <TableCell className={classes.tableCell1}>Label:</TableCell>
-                        <TableCell align="right" className={classes.tableCell1}>Confidence:</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody className={classes.tableBody}>
-                      <TableRow className={classes.tableRow}>
-                        <TableCell component="th" scope="row" className={classes.tableCell}>
-                          {data.class}
-                        </TableCell>
-                        <TableCell align="right" className={classes.tableCell}>{confidence}%</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>}
-              {isLoading && <CardContent className={classes.detail}>
-                <CircularProgress color="secondary" className={classes.loader} />
-                <Typography className={classes.title} variant="h6" noWrap>
-                  Processing
-                </Typography>
-              </CardContent>}
-            </Card>
-          </Grid>
-          {data &&
-            <Grid item className={classes.buttonGrid} >
-
-              <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />}>
-                Clear
-              </ColorButton>
-            </Grid>}
-        </Grid >
-      </Container >
-    </React.Fragment >
+      <React.Fragment>
+        <AppBar position="static" className={classes.appbar}>
+          <Toolbar>
+            <div className={classes.grow} />
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth={false} className={classes.mainContainer} disableGutters={true}>
+          <Grid
+              className={classes.gridContainer}
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+          >
+            <Grid item xs={12}>
+              <Card className={`${classes.imageCard} ${!image ? classes.imageCardEmpty : ''}`}>
+                {processedImage && <CardActionArea>
+                  <CardMedia
+                      className={classes.media}
+                      image={processedImage}
+                      component="img"
+                      title="Processed Image"
+                  />
+                </CardActionArea>
+                }
+                {!processedImage && image && <CardActionArea>
+                  <CardMedia
+                      className={classes.media}
+                      image={preview}
+                      component="img"
+                      title="Uploaded Image"
+                  />
+                </CardActionArea>
+                }
+                {!image && <CardContent className={classes.content}>
+                  <DropzoneArea
+                      acceptedFiles={['image/*']}
+                      dropzoneText={"Drag and drop an image of vine plant"}
+                      onChange={onSelectFile}
+                  />
+                </CardContent>}
+                {data && <CardContent className={classes.detail}>
+                  <TableContainer component={Paper} className={classes.tableContainer}>
+                    <Table className={classes.table} size="small" aria-label="simple table">
+                      <TableHead className={classes.tableHead}>
+                        <TableRow className={classes.tableRow}>
+                          <TableCell className={classes.tableCell1}>Label:</TableCell>
+                          <TableCell align="right" className={classes.tableCell1}>Confidence:</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody className={classes.tableBody}>
+                        <TableRow className={classes.tableRow}>
+                          <TableCell component="th" scope="row" className={classes.tableCell}>
+                            {data.label}
+                          </TableCell>
+                          <TableCell align="right" className={classes.tableCell}>{confidence}%</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </CardContent>}
+                {isLoading && <CardContent className={classes.detail}>
+                  <CircularProgress color="secondary" className={classes.loader} />
+                  <Typography className={classes.title} variant="h6" noWrap>
+                    Processing
+                  </Typography>
+                </CardContent>}
+              </Card>
+            </Grid>
+            {data &&
+                <Grid item className={classes.buttonGrid} >
+                  <ColorButton variant="contained" className={classes.clearButton} color="primary" component="span" size="large" onClick={clearData} startIcon={<Clear fontSize="large" />}>
+                    Clear
+                  </ColorButton>
+                </Grid>}
+          </Grid >
+        </Container >
+      </React.Fragment >
   );
 };
