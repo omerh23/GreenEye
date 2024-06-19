@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Text, View, StyleSheet, Image, TouchableOpacity, Linking, Alert} from "react-native";
+import {Text, View, StyleSheet, Image, TouchableOpacity, Linking, Alert, Button} from "react-native";
 import Logo from "../Home/logo";
 import Sidebar from "../Sidebar";
 import { WebView } from 'react-native-webview';
@@ -48,7 +48,10 @@ const About = () =>{
                 onRequestClose={() => setModalVisible(false)}
                 animationType="slide"
             >
-                <WebView source={{ uri: uri }} />
+                <View style={{ flex: 1 }}>
+                    <WebView source={{ uri: uri }} />
+                    <Button color="#2a7312" title="Close" onPress={() => setModalVisible(false)} />
+                </View>
             </Modal>
         </View>
     );
