@@ -28,7 +28,14 @@ const History = () => {
         };
 
         getUserData();
+
     }, []);
+
+    useEffect(() => {
+        if (token) {
+            HandleLatestHistory();
+        }
+    }, [token]);
 
     //ask from server all images in database
     async function HandleLatestHistory(){
