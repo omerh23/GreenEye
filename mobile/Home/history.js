@@ -12,9 +12,9 @@ const History = () => {
     const [data,setData] = useState([]);
 
     // States for each button
-    const [latestHistoryButton, setLatestHistoryButton] = useState(false);
+    const [allHistoryButton, setAllHistoryButton] = useState(false);
     const [manualDetectionButton, setManualDetectionButton] = useState(false);
-    const [historyDetectionButton, setHistoryDetectionButton] = useState(false);
+    const [historyAutomaticDetectionButton, setHistoryAutomaticDetectionButton] = useState(false);
     const [token, setToken] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const navigation = useNavigation();
@@ -30,16 +30,16 @@ const History = () => {
         getUserData();
     }, []);
 
-
+    //ask from server all images in database
     async function HandleLatestHistory(){
         try{
-            setLatestHistoryButton(!latestHistoryButton);
+            setAllHistoryButton(!allHistoryButton);
             setManualDetectionButton(false);
-            setHistoryDetectionButton(false);
+            setHistoryAutomaticDetectionButton(false);
             setIsLoading(true);
 
-            //const res = await axios.post('http://10.0.2.2:8000/latestHistory', {token});
-            const res = await axios.post('https://backend-greeneye.onrender.com/latestHistory', {token});
+            const res = await axios.post('http://10.0.2.2:8000/latestHistory', {token});
+            //const res = await axios.post('https://backend-greeneye.onrender.com/latestHistory', {token});
             setData(res.data);
         }catch (error) {
             console.error('Error fetching data:', error);
@@ -53,10 +53,12 @@ const History = () => {
     async function HandleManualDetection() {
         try {
             setManualDetectionButton(!manualDetectionButton);
-            setLatestHistoryButton(false);
-            setHistoryDetectionButton(false);
+            setAllHistoryButton(false);
+            setHistoryAutomaticDetectionButton(false);
             setIsLoading(true);
-            const res = await axios.post('https://backend-greeneye.onrender.com/manualDetection', {token});
+            //const res = await axios.post('https://backend-greeneye.onrender.com/manualDetectionHistory', {token});
+            const res = await axios.post('http://10.0.2.2:8000/manualDetectionHistory', {token});
+
             setData(res.data);
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -65,13 +67,15 @@ const History = () => {
         }
     }
 
-    async function HandleDetectionHistory(){
+    async function HandleAutomaticDetectionHistory(){
         try{
-            setHistoryDetectionButton(!historyDetectionButton);
-            setLatestHistoryButton(false);
+            setHistoryAutomaticDetectionButton(!historyAutomaticDetectionButton);
+            setAllHistoryButton(false);
             setManualDetectionButton(false);
             setIsLoading(true);
-            const res = await axios.post('https://backend-greeneye.onrender.com/detectionHistory', {token});
+            // const res = await axios.post('https://backend-greeneye.onrender.com/automaticDetectionHistory', {token});
+            const res = await axios.post('http://10.0.2.2:8000/automaticDetectionHistory', {token});
+
             setData(res.data);
         }catch (error) {
             console.error('Error fetching data:', error);
@@ -91,23 +95,24 @@ const History = () => {
             <Sidebar />
             <View style={styles.historyMenu}>
                 <TouchableOpacity
-                    style={[styles.historyButtons, latestHistoryButton && styles.buttonPressed]}
+                    style={[styles.historyButtons, allHistoryButton && styles.buttonPressed]}
                     onPress={HandleLatestHistory}>
-                    <Text style={styles.historyButton}>Latest History </Text>
+                    <Text style={styles.historyButton}>All History </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.historyButtons, manualDetectionButton && styles.buttonPressed]}
                     onPress={HandleManualDetection}>
-                    <Text style={styles.historyButton}>Manual Detection</Text>
+                    <Text style={styles.historyButton}>Manual Detection </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.historyButtons, historyDetectionButton && styles.buttonPressed]}
-                    onPress={HandleDetectionHistory}>
-                    <Text style={styles.historyButton}>Detection History</Text>
+                    style={[styles.historyButtons, historyAutomaticDetectionButton && styles.buttonPressed]}
+                    onPress={HandleAutomaticDetectionHistory}>
+                    <Text style={styles.historyButton}>Auto Detection</Text>
                 </TouchableOpacity>
             </View>
+
 
             {isLoading ? (
                     <View style={{top:100}}>
@@ -117,30 +122,48 @@ const History = () => {
             ) : (
                 <View style={styles.historyDetails}>
                     <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                        {(latestHistoryButton || manualDetectionButton || historyDetectionButton) &&
-                            data.map((item, index) => (
-                                <View key={index} style={styles.itemContainer}>
-                                    <Text style={styles.historyText}> {item.description}</Text>
-                                    <Text style={styles.historyText}>Uploaded: {item.uploaded}</Text>
-                                    <Image
-                                        source={{ uri: item.url }}
-                                        style={{
-                                            width: 250,
-                                            height: 250,
-                                            borderWidth: 2,
-                                            borderColor: 'black',
-                                            borderRadius: 10,
-                                            marginBottom: 15,
-                                            marginTop: 10,
-                                            resizeMode: 'stretch',
-                                        }}
-                                    />
-                                    {index < data.length - 1 && <View style={styles.separator} />}
-                                </View>
-                            ))
-                        }
+                        {(allHistoryButton || manualDetectionButton || historyAutomaticDetectionButton) && (
+                            <>
+                                {allHistoryButton && (
+                                    <Text style={styles.buttonsInfo}>
+                                        These images are the last 30 detections that have been found in the plants with more than 50 percent accuracy.
+                                    </Text>
+                                )}
+                                {manualDetectionButton && (
+                                    <Text style={styles.buttonsInfo}>
+                                        These images are the manual detections from broadcast camera and smartphone camera
+                                    </Text>
+                                )}
+                                {historyAutomaticDetectionButton && (
+                                    <Text style={styles.buttonsInfo}>
+                                        These images are the automatic detections from broadcast camera
+                                    </Text>
+                                )}
+                                {data.map((item, index) => (
+                                    <View key={index} style={styles.itemContainer}>
+                                        <Text style={styles.historyText}> {item.description}</Text>
+                                        <Text style={styles.historyText}>Uploaded: {item.uploaded}</Text>
+                                        <Image
+                                            source={{ uri: item.url }}
+                                            style={{
+                                                width: 250,
+                                                height: 250,
+                                                borderWidth: 2,
+                                                borderColor: 'black',
+                                                borderRadius: 10,
+                                                marginBottom: 15,
+                                                marginTop: 10,
+                                                resizeMode: 'stretch',
+                                            }}
+                                        />
+                                        {index < data.length - 1 && <View style={styles.separator} />}
+                                    </View>
+                                ))}
+                            </>
+                        )}
                     </ScrollView>
                 </View>
+
             )}
 
 
@@ -180,7 +203,7 @@ const styles = StyleSheet.create({
     },
 
     historyDetails: {
-        left: 15,
+        left: 10,
     },
     separator: {
         borderBottomWidth: 2,
@@ -206,6 +229,17 @@ const styles = StyleSheet.create({
         width: 80, // Adjust the size of your logo
         height: 80, // Adjust the size of your logo
     },
+    buttonsInfo: {
+        margin: 10,
+        fontWeight: 'bold',
+        fontSize: 20,
+        backgroundColor: '#98ff98',
+        paddingHorizontal: 5, // Add padding to control the background width
+        paddingVertical: 2,   // Add padding to control the background height
+        alignSelf: 'flex-start', // Ensure the background doesn't extend full width
+        borderRadius: 5,
+    },
+
 
 });
 

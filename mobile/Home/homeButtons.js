@@ -11,15 +11,15 @@ const HomeButtons = ({Live, History,SelfCamera}) => {
         <View style={styles.buttonContainer1}>
             <TouchableOpacity style={styles.button1} onPress={Live}>
                 <FontAwesomeIcon name="video-camera" size={35} color="black" />
-                <Text style={styles.buttonTextt}>Live</Text>
+                <Text style={styles.buttonTextt}>Greenhouse Camera</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button1} onPress={History}>
                 <FontAwesomeIcon name="file-text" size={35} color="black" />
-                <Text style={styles.buttonTextt}>History</Text>
+                <Text style={styles.buttonTextt}>Detections History</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.button1} onPress={SelfCamera}>
                 <EntypoIcon name="camera" size={35} color="black" />
-                <Text style={styles.buttonTextt}>Camera</Text>
+                <Text style={styles.buttonTextt}>Smartphone Camera</Text>
             </TouchableOpacity>
         </View>
     );
@@ -27,9 +27,10 @@ const HomeButtons = ({Live, History,SelfCamera}) => {
 
  const styles = StyleSheet.create({
      buttonTextt: {
-         fontSize: 16,
+         fontSize: 15,
          fontWeight: 'bold',
          color: '#000',
+         textAlign:"center"
      },
      button1: {
          marginVertical: 10,

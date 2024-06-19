@@ -41,14 +41,14 @@ const CameraView = () => {
     async function HandlePhoto() {
         try {
             setImageDetails('');
-
+            setIsImageFromCls(false);
             const photo = await camera.current.takePhoto();
 
             setImageSource(`file://${photo.path}`);
             setImageDetails("waiting for results..");
             const base64Image = await RNFS.readFile(photo.path, 'base64');
-            //const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token });
-            const response = await axios.post('https://backend-greeneye.onrender.com/selfCamera', { base64Image, token });
+            const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token });
+            //const response = await axios.post('https://backend-greeneye.onrender.com/selfCamera', { base64Image, token });
             console.log('Image uploaded successfully:', response.data);
             const { label, confidence, image } = response.data;
             const detailString = `Result: ${label}\nConfidence: ${confidence}%`;
