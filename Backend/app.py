@@ -81,6 +81,7 @@ def load_image_to_array(image_path):
 
         return img_array
 
+
 def upload_image_to_cloudinary(image_path):
     response = cloudinary.uploader.upload(image_path)
     return response
@@ -91,13 +92,12 @@ class ImageData(BaseModel):
     token: str
 
 
-@router.post("/manualCapture")
+@router.post("/manualCapture") #manual capture of broadcast camera
 async def receive_image(data: ImageData):
     try:
         userId = ObjectId(get_current_user(data.token))
         header, encoded = data.imageUri.split(",", 1)
         image_data = base64.b64decode(encoded)
-        detect = False
 
         # Use a temporary file to upload to Cloudinary
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as file:
@@ -119,38 +119,23 @@ async def receive_image(data: ImageData):
         #
         # predTuple = classify(array)
 
-        if predTuple['confidence'] > 50:
-            detect = True
+        result = predTuple
+        if predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
+            result = uploadImageToDatabase(userId,image_url,predTuple,"manual")
 
-        update_result = collection.update_one(
-            {"_id": userId},
-            {
-                "$push": {
-                    "images": {
-                        "url": image_url,
-                        #"url": upload_response['url'],
-                        "description": f"Result: {predTuple['confidence']}, confidence: {predTuple['label']}%",
-                        "uploaded": datetime.date.today().isoformat(),
-                        "isDetected": detect,
-                        "isManual": True
-                    }
-                }
-            }
-        )
+        return result
 
-        if update_result.modified_count == 0:
-            return {"message": "Failed to update the database"}
 
-        return predTuple
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
 
+
 class obj:
-  def __init__(self, url, description, uploaded):
-    self.url = url
-    self.description = description
-    self.uploaded = uploaded
+    def __init__(self, url, description, uploaded):
+        self.url = url
+        self.description = description
+        self.uploaded = uploaded
 
 
 @router.post("/latestHistory")
@@ -180,8 +165,8 @@ async def receive_image(data: dict):
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
 
 
-@router.post('/detectionHistory')
-async def manualDetection(data: dict):
+@router.post('/automaticDetectionHistory')
+async def automaticDetection(data: dict):
     try:
         userId = ObjectId(get_current_user(data["token"]))
         existing_user = collection.find_one({"_id": userId})
@@ -189,7 +174,7 @@ async def manualDetection(data: dict):
         latestHistory = []
         for image_info in existing_user['images']:
 
-            if image_info['isDetected']:
+            if image_info['isAutomatic']:
                 image_url = image_info['url']
                 response = requests.get(image_url)
                 if response.status_code == 200:
@@ -208,13 +193,13 @@ async def manualDetection(data: dict):
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
 
 
-@router.post('/manualDetection')
+@router.post('/manualDetectionHistory')
 async def manualDetection(data: dict):
     try:
         userId = ObjectId(get_current_user(data["token"]))
         existing_user = collection.find_one({"_id": userId})
 
-        latestHistory = []
+        manualHistory = []
         for image_info in existing_user['images']:
 
             if image_info['isManual']:
@@ -222,7 +207,7 @@ async def manualDetection(data: dict):
                 response = requests.get(image_url)
                 if response.status_code == 200:
                     base64_image = base64.b64encode(response.content).decode('utf-8')
-                    latestHistory.append({
+                    manualHistory.append({
                         'url': f"data:image/jpeg;base64,{base64_image}",
                         'description': image_info['description'],
                         'uploaded': image_info['uploaded']
@@ -230,7 +215,7 @@ async def manualDetection(data: dict):
                 else:
                     print("Failed to download the image")
 
-        return latestHistory
+        return manualHistory
 
     except Exception as e:
         print(e)
@@ -306,7 +291,7 @@ async def receive_image(data: dict):
         rotated_image = image.rotate(90, expand=True)
         buffer = io.BytesIO()
         rotated_image.save(buffer, format="JPEG")
-        #image.save(buffer, format="JPEG")
+        # image.save(buffer, format="JPEG")
         buffer.seek(0)
 
         with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as file:
@@ -320,26 +305,11 @@ async def receive_image(data: dict):
         rotateImg = np.array(rotated_image)
         predTuple = classify(np.array(rotateImg))
 
-        if predTuple['confidence'] > 50:
-            update_result = collection.update_one(
-                {"_id": userId},
-                {
-                    "$push": {
-                        "images": {
-                            "url": image_url,
-                            "description": f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%",
-                            "uploaded": datetime.date.today().isoformat(),
-                            "isDetected": True,
-                            "isManual": True
-                        }
-                    }
-                }
-            )
+        result = predTuple
+        if predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
+            result = uploadImageToDatabase(userId, image_url, predTuple, "manual")
 
-            if update_result.modified_count == 0:
-                return {"message": "Failed to update the database"}
-        return predTuple
-
+        return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
 
@@ -366,15 +336,15 @@ def capture_frame(camera_url):
         print("Error: Could not read frame")
         return None
 
-def identificationExplore():
 
+def identificationExplore():
     for user in collection.find():
         cameraUrl = user['cameraUrl']
         if cameraUrl != 'None':
             frame = capture_frame(cameraUrl)
             predTuple = classify(frame)
-            if predTuple['label'] != 'No identify' and predTuple['confidence'] > 50:
-            #if predTuple[1] > 20:
+            if predTuple['label'] != 'No identify' and predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
+                # if predTuple[1] > 20:
                 with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as file:
                     file_path = file.name
                 # Write frame to the temporary file using OpenCV
@@ -394,8 +364,8 @@ def identificationExplore():
                                 # "url": upload_response['url'],
                                 "description": f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%",
                                 "uploaded": datetime.date.today().isoformat(),
-                                "isDetected": True,
-                                "isManual": False
+                                "isManual": False,
+                                "isAutomatic": True
                             }
                         }
                     }
@@ -425,9 +395,41 @@ def identificationExplore():
                         print(f"No FCM token for user {user['username']}")
 
 
+def uploadImageToDatabase(userId, imageUrl, predTuple,detectionType):
+    isManual = False
+    isAuto = False
+    if detectionType == "manual":
+        isManual = True
+    if detectionType == "auto":
+        isAuto = True
+
+    update_result = collection.update_one(
+        {"_id": userId},
+        {
+            "$push": {
+                "images": {
+                    "$each": [{
+                        "url": imageUrl,
+                        "description": f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%",
+                        "uploaded": datetime.date.today().isoformat(),
+                        "isManual": isManual,
+                        "isAutomatic": isAuto
+                    }],
+                    "$slice": -30
+                }
+            }
+        }
+    )
+
+    if update_result.modified_count == 0:
+        return {"message": "Failed to update the database"}
+    else:
+        return predTuple
+
+
 @router.on_event("startup")
 async def start_scheduler():
     # Schedule the function to run every 5 seconds
     scheduler.add_job(identificationExplore, 'interval', hours=3)
-    #scheduler.add_job(identificationExplore, 'interval', seconds=10)
+    # scheduler.add_job(identificationExplore, 'interval', seconds=30)
     scheduler.start()
