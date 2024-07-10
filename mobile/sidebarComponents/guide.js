@@ -1,20 +1,15 @@
 import React from 'react';
-import {
-    StyleSheet,
-    Text,
-    SafeAreaView,
-    ScrollView,
-    View,
-} from 'react-native';
+import { StyleSheet, Text, SafeAreaView, ScrollView, View } from 'react-native';
 import Logo from '../Home/logo';
 import Sidebar from '../Sidebar';
 
 const Guide = () => {
+
     return (
         <SafeAreaView style={styles.container}>
             <Logo />
             <Sidebar />
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <ScrollView style={styles.scrollView}>
                 <View style={styles.form}>
                     <Text style={styles.aboutHeader}>App Guide</Text>
                     <Text style={styles.text}>
@@ -36,15 +31,14 @@ const Guide = () => {
     );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
     },
-    scrollContainer: {
-        flexGrow: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+    scrollView: {
+        marginHorizontal: 20,
+        marginTop: 100,
     },
     form: {
         padding: 20,
@@ -58,7 +52,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        width: '100%',
     },
     aboutHeader: {
         fontSize: 35,
