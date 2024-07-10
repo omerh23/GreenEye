@@ -27,16 +27,16 @@ const Login = () => {
       setDetailMessage('');
       setColorDetails('#2a7312');
       setDetailMessage('Loading please wait..');
-      const res = await axios.post('https://backend-greeneye.onrender.com/login',
-          { email,
-                  password
-                },
-          {timeout:50000});
-      // const res = await axios.post('http://10.0.2.2:8000/login',
+      // const res = await axios.post('https://backend-greeneye.onrender.com/login',
       //     { email,
-      //       password
-      //     },
+      //             password
+      //           },
       //     {timeout:50000});
+      const res = await axios.post('http://10.0.2.2:8000/login',
+          { email,
+            password
+          },
+          {timeout:50000});
 
       if (res.data.status === 'success') {
         setDetailMessage('');
@@ -126,7 +126,7 @@ const Login = () => {
           onChangeText={setPassword}
         />
         <TouchableOpacity style={styles.loginbutton} onPress={handleSignIn}>
-          <Text style={styles.buttonText1}>Signin</Text>
+          <Text style={styles.buttonText1}>Login</Text>
         </TouchableOpacity>
         <Text style={[styles.details, {color: colorDetails}]} >{detailMessage} </Text>
         {/*<Text style={{textAlign: 'center'}} > {approveMessage} </Text>*/}

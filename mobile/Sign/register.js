@@ -37,7 +37,9 @@ const Register = () => {
             setEmailBorder('#2a7312');
             setPasswordBorder('#2a7312');
             const fcmToken = await messaging().getToken();
-            const res = await axios.post('https://backend-greeneye.onrender.com/register', { password, confirmPassword, username, email,fcmToken});
+            //const res = await axios.post('https://backend-greeneye.onrender.com/register', { password, confirmPassword, username, email,fcmToken});
+            const res = await axios.post('http://10.0.2.2:8000/register', { password, confirmPassword, username, email,fcmToken});
+
             console.log(res.data.status);
 
             if (res.data.status === 'success') {

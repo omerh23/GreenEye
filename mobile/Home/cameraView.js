@@ -89,7 +89,7 @@ const CameraView = () => {
 
             <TouchableOpacity style={styles.captureButton} onPress={HandlePhoto}>
                 <EntypoIcon name="camera" size={40} color="#2a7312" />
-                <Text style={styles.buttonText2}>Take screenshot</Text>
+                <Text style={styles.buttonText2}>Take Photo</Text>
             </TouchableOpacity>
             {imageSource ? (
                 <View style={styles.previewContainer}>

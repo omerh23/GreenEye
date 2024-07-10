@@ -53,8 +53,11 @@ const Settings = () => {
         setNewPasswordBorder('#2a7312');
         setDetailMessage('');
         setColorDetails('red');
-        const res = await axios.post('https://backend-greeneye.onrender.com/changeDetails',{token,username
-        ,email,oldPassword,newPassword,cameraUrl});
+        // const res = await axios.post('https://backend-greeneye.onrender.com/changeDetails',{token,username
+        // ,email,oldPassword,newPassword,cameraUrl});
+        const res = await axios.post('http://10.0.2.2:8000/changeDetails',{token,username
+            ,email,oldPassword,newPassword,cameraUrl});
+
         console.log(res.data.status);
 
         if (res.data.status === 'success') {
@@ -117,13 +120,7 @@ const Settings = () => {
                     value={email}
                     onChangeText={setEmail}
                 />
-                <Text style={styles.label}>Change camera url:</Text>
-                <TextInput
-                    style={[styles.input, { borderColor: cameraUrlBorder}]}
-                    value={cameraUrl}
-                    //placeholder={user? user.cameraUrl : null}
-                    onChangeText={setCameraUrl}
-                />
+
                 <Text style={styles.label}>Enter old password:</Text>
                 <TextInput
                     style={[styles.input, { borderColor: passwordBorder}]}
@@ -139,6 +136,13 @@ const Settings = () => {
                     secureTextEntry
                     value={newPassword}
                     onChangeText={setNewPassword}
+                />
+                <Text style={styles.label}>Change camera url:</Text>
+                <TextInput
+                    style={[styles.input, { borderColor: cameraUrlBorder}]}
+                    value={cameraUrl}
+                    //placeholder={user? user.cameraUrl : null}
+                    onChangeText={setCameraUrl}
                 />
                 <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                     <Text style={styles.submitText}>Submit</Text>

@@ -30,7 +30,8 @@
     "react-native-view-shot": "^3.8.0",
     "react-native-vision-camera": "^3.8.0",
     "react-native-vlc-media-player": "^1.0.61",
-    "react-native-websocket": "^1.0.2"
+    "react-native-websocket": "^1.0.2",
+    "react-native-webview": "^13.10.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
