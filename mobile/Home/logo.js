@@ -13,7 +13,7 @@ const Logo = () => {
     return(
         <View style={styles.logo}>
             <TouchableOpacity onPress={handleLogo}>
-                <Image source={require('../images/gelogo.png')} style={styles.logo} />
+                <Image source={require('../images/nlogo.png')} style={styles.logo} />
             </TouchableOpacity>
         </View>
 
@@ -23,10 +23,10 @@ const Logo = () => {
 const styles = StyleSheet.create({
     logo: {
         position: 'absolute',
-        top: 10,
-        left: 10,
-        width: 80, // Adjust the size of your logo
-        height: 80, // Adjust the size of your logo
+        top: 5,
+        left: 5,
+        width: 90, // Adjust the size of your logo
+        height: 90, // Adjust the size of your logo
     },
 
 });

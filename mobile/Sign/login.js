@@ -3,7 +3,6 @@ import {
   ImageBackground,
   View,
   Text,
-  Image,
   StyleSheet,
   TouchableOpacity,
   TextInput,
@@ -11,7 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Logo from '../Home/logo';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -106,8 +105,7 @@ const Login = () => {
         style={styles.backgroundImage}
         resizeMode="cover"
       />
-      <Image source={require('../images/gelogo.png')} style={styles.logo} />
-
+      <Logo/>
       <View style={styles.form}>
         <Text style={styles.loginheader}>Login</Text>
         <Text style={styles.label}>Email:</Text>
