@@ -6,10 +6,11 @@ This repository contains a server-client application designed to identify diseas
 ## Gallery
 
 <p align="center">
-  <img src="![image](https://github.com/user-attachments/assets/91aad88d-f22e-4690-9d6d-4d8eadb39330)" width="200" alt="Image 1" />
-  <img src="https://github.com/user-attachments/assets/7a2207fb-ee94-4fc7-8956-8bf5c4c3e2d0" width="200" alt="Image 2" />
-  <img src="https://github.com/user-attachments/assets/d0457f1b-03ea-47fc-a1f6-10aac1e5822b" width="200" alt="Image 3" />
+  <img src="https://github.com/user-attachments/assets/90682abd-5086-4f99-ba93-fd6f693ba5d5" width="200" alt="Image 1" />
+  <img src="https://github.com/user-attachments/assets/89a54810-48f8-4f7e-a623-6c207b608917" width="200" alt="Image 2" />
+  <img src="https://github.com/user-attachments/assets/2e48ef74-7c93-493f-a45a-7790c6ce293d" width="200" alt="Image 3" />
 </p>
+
 
 ## Features
 
