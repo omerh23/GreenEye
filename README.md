@@ -6,8 +6,7 @@ This repository contains a server-client application designed to identify diseas
 ## Gallery
 
 <p align="center">
-  <img src="![תמונה של WhatsApp‏ 2024-07-24 בשעה 17 16 10_429eef8d](https://github.com/user-attachments/assets/f1b64d6c-8ab7-4b35-b6d2-b7f266498b0f)
-" width="200" alt="Image 1" />
+  <img src="![image](https://github.com/user-attachments/assets/91aad88d-f22e-4690-9d6d-4d8eadb39330)" width="200" alt="Image 1" />
   <img src="https://github.com/user-attachments/assets/7a2207fb-ee94-4fc7-8956-8bf5c4c3e2d0" width="200" alt="Image 2" />
   <img src="https://github.com/user-attachments/assets/d0457f1b-03ea-47fc-a1f6-10aac1e5822b" width="200" alt="Image 3" />
 </p>
