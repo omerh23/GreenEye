@@ -1,6 +1,3 @@
-Here's a comprehensive README file for your GitHub repository:
-
----
 
 # Plant Disease Identification Application
 
@@ -37,8 +34,7 @@ This repository contains a server-client application designed to identify diseas
 1. **Clone the Repository**
 
    ```sh
-   git clone https://github.com/yourusername/plant-disease-identification.git
-   cd plant-disease-identification
+   git clone https://github.com/omerh23/GreenEye.git
    ```
 
 2. **Client-Side Setup (React Native)**
@@ -61,7 +57,7 @@ This repository contains a server-client application designed to identify diseas
 
    ```sh
    cd backend
-   python app.py
+   python main.py
    ```
 
 2. **Start the Client**
@@ -88,10 +84,6 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Contact
 
-For any inquiries or support, please contact [yourname@example.com](mailto:yourname@example.com).
 
----
 
-Feel free to customize any sections as needed.
