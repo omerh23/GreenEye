@@ -49,7 +49,7 @@ const CameraView = () => {
             const base64Image = await RNFS.readFile(photo.path, 'base64');
             const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token });
             //const response = await axios.post('https://backend-greeneye.onrender.com/selfCamera', { base64Image, token });
-            console.log('Image uploaded successfully:', response.data);
+            console.log('Image uploaded successfully');
             const { label, confidence, image } = response.data;
             const detailString = `Result: ${label}\nConfidence: ${confidence}%`;
             setImageDetails(detailString);

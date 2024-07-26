@@ -23,13 +23,15 @@ def classify(image_to_classify):
     im = Image.fromarray(image_to_classify)
     yolo_results = model.predict(im)
     render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
-    render.show()
-    # Convert rendered image to base64
+    #render.show()
+    # Convert the image to RGB mode
+    if render.mode == 'RGBA':
+        render = render.convert('RGB')
+
     buffered = io.BytesIO()
     render.save(buffered, format="JPEG")
     img_str = base64.b64encode(buffered.getvalue()).decode()
     yolo_boxes = yolo_results[0].boxes.xyxy.tolist()
-
     if not yolo_boxes:
         return {'label': 'No identify', 'confidence': 100, 'image': img_str}
 

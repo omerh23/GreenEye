@@ -17,6 +17,7 @@ const LiveCameraScreen = () => {
     const [imageDetails, setImageDetails] = useState("");
     const [token, setToken] = useState(null);
     const [cameraUrl, setCameraUrl] = useState('')
+    const [imageSource, setImageSource] = useState('');
 
     const viewShot = useRef(null);
     const [uri, setUri] = useState("");
@@ -43,6 +44,7 @@ const LiveCameraScreen = () => {
     //user capture image from broadcast camera
     const captureScreen = () => {
         viewShot.current.capture().then(async (uri) => {
+            setImageSource('');
             setUri(uri);
             setImageDetails('');
             //const token = await AsyncStorage.getItem('token');
@@ -56,15 +58,22 @@ const LiveCameraScreen = () => {
                         token:token
                     })
                         .then(response => {
-                            console.log('Image uploaded successfully:', response.data);
+                            console.log('Image uploaded successfully from broadcast camera');
                             //setUri("");
-                            const { Result: className, confidence } = response.data;
-                            const detailString = `Result: ${className}, Confidence: ${confidence}%`;
+                            const { label, confidence, image } = response.data;
+                            const detailString = `Result: ${label}, Confidence: ${confidence}%`;
                             setImageDetails(detailString);
+                            if (image) {
+                                setImageSource(`data:image/jpeg;base64,${image}`);
+
+
+                            }
                         })
                         .catch(error => {
                             console.error('Error uploading image:', error);
                         });
+
+
                 })
                 .catch(error => {
                     console.error('Error converting image to base64:', error);
@@ -86,6 +95,7 @@ const LiveCameraScreen = () => {
 
     function closeCapture() {
         setUri("");
+        setImageSource('');
         setImageDetails("");
     }
 
@@ -127,7 +137,7 @@ const LiveCameraScreen = () => {
                 <View style={styles.previewContainer}>
                     <Text style={styles.buttonText2}>Preview</Text>
                     <Image
-                        source={{ uri: uri }}
+                        source={imageSource ? { uri: imageSource } : { uri: uri }}
                         style={styles.previewImage}
                         resizeMode="contain"
                     />

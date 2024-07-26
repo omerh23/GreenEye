@@ -104,10 +104,6 @@ async def receive_image(data: ImageData):
             file.write(image_data)
             file_path = file.name
 
-        # Upload to Cloudinary
-        response = upload(file_path, folder="your_folder_name")  # specify your folder name
-        image_url = response.get("url")
-        os.remove(file_path)
         image = np.array(Image.open(BytesIO(image_data)))
         predTuple = classify(image)
 
@@ -121,7 +117,12 @@ async def receive_image(data: ImageData):
 
         result = predTuple
         if predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
-            result = uploadImageToDatabase(userId,image_url,predTuple,"manual")
+            # Upload to Cloudinary
+            response = upload(file_path, folder="your_folder_name")  # specify your folder name
+            image_url = response.get("url")
+            os.remove(file_path)
+
+            result = uploadImageToDatabase(userId, image_url, predTuple, "manual")
 
         return result
 
@@ -298,15 +299,16 @@ async def receive_image(data: dict):
             file.write(buffer.read())
             file_path = file.name
 
-        # Upload to Cloudinary
-        response = upload(file_path, folder="your_folder_name")  # specify your folder name
-        image_url = response.get("url")
-        os.remove(file_path)
         rotateImg = np.array(rotated_image)
         predTuple = classify(np.array(rotateImg))
 
         result = predTuple
         if predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
+            # Upload to Cloudinary
+            response = upload(file_path, folder="your_folder_name")  # specify your folder name
+            image_url = response.get("url")
+            os.remove(file_path)
+
             result = uploadImageToDatabase(userId, image_url, predTuple, "manual")
 
         return result
