@@ -3,6 +3,15 @@
 
 This repository contains a server-client application designed to identify diseases in plants using artificial intelligence. The application is optimized for Android devices and consists of a client-side developed in React Native and a server-side in Python, utilizing the YOLOv8 model for disease detection.
 
+## Gallery
+
+<p align="center">
+  <img src="![image](https://github.com/user-attachments/assets/89ad6f55-3116-472d-b574-a067fd4d5ca1)
+" width="200" alt="Image 1" />
+  <img src="path/to/image2.png" width="200" alt="Image 2" />
+  <img src="path/to/image3.png" width="200" alt="Image 3" />
+</p>
+
 ## Features
 
 - **Automatic Analysis**: Provides farmers with automatic analysis in their greenhouses and alerts if a disease is detected.
