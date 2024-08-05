@@ -18,7 +18,6 @@ const LiveCameraScreen = () => {
     const [token, setToken] = useState(null);
     const [cameraUrl, setCameraUrl] = useState('')
     const [imageSource, setImageSource] = useState('');
-
     const viewShot = useRef(null);
     const [uri, setUri] = useState("");
 
@@ -30,7 +29,7 @@ const LiveCameraScreen = () => {
                 setToken(storedToken);
                 if (userData) {
                     setCameraUrl(userData.cameraUrl);
-                    console.log("Camera url:", userData.cameraUrl);
+                    //console.log("Camera url:", userData.cameraUrl);
                 }
             } catch (error) {
                 console.error('Error fetching and setting user data', error);
@@ -42,43 +41,72 @@ const LiveCameraScreen = () => {
 
 
     //user capture image from broadcast camera
-    const captureScreen = () => {
-        viewShot.current.capture().then(async (uri) => {
-            setImageSource('');
-            setUri(uri);
+    async function captureScreen(){
+        try {
             setImageDetails('');
-            //const token = await AsyncStorage.getItem('token');
-            // Convert image to base64
-            RNFS.readFile(uri, 'base64')
-                .then(base64String => {
-                    // Send the base64 string to the server
-                    //https://backend-greeneye.onrender.com
-                     axios.post('http://10.0.2.2:8000/manualCapture', {
-                        imageUri: `data:image/png;base64,${base64String}`,
-                        token:token
-                    })
-                        .then(response => {
-                            console.log('Image uploaded successfully from broadcast camera');
-                            //setUri("");
-                            const { label, confidence, image } = response.data;
-                            const detailString = `Result: ${label}, Confidence: ${confidence}%`;
-                            setImageDetails(detailString);
-                            if (image) {
-                                setImageSource(`data:image/jpeg;base64,${image}`);
+            setImageSource('');
+            setImageDetails('Waiting for results..');
+            const uri = await viewShot.current.capture();
+            await setUri(uri);
+            const token = await AsyncStorage.getItem('token');
+            const base64Image = await RNFS.readFile(uri, 'base64');
+            const broadcastCamera = true;
+            const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token,broadcastCamera });
+
+            console.log('Image uploaded successfully from broadcast camera');
+            const { label, confidence, image } = response.data;
+            const detailString = `Result: ${label}, Confidence: ${confidence}%`;
+            setImageDetails(detailString);
+
+            if (image) {
+                setImageSource(`data:image/jpeg;base64,${image}`);
+            }
+
+            console.log(detailString);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
 
 
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error uploading image:', error);
-                        });
 
 
-                })
-                .catch(error => {
-                    console.error('Error converting image to base64:', error);
-                });
-        });
+
+        // viewShot.current.capture().then(async (uri) => {
+        //     setImageSource('');
+        //     setUri(uri);
+        //     setImageDetails('Waiting for results..');
+        //     const token = await AsyncStorage.getItem('token');
+        //     Convert image to base64
+        //     RNFS.readFile(uri, 'base64')
+        //         .then(base64String => {
+        //             // Send the base64 string to the server
+        //             //https://backend-greeneye.onrender.com
+        //              axios.post('http://10.0.2.2:8000/manualCapture', {
+        //                 imageUri: `data:image/png;base64,${base64String}`,
+        //                 token:token
+        //             })
+        //                 .then(response => {
+        //                     console.log('Image uploaded successfully from broadcast camera');
+        //                     //setUri("");
+        //                     const { label, confidence, image } = response.data;
+        //                     const detailString = `Result: ${label}, Confidence: ${confidence}%`;
+        //                     setImageDetails(detailString);
+        //                     if (image) {
+        //                         setImageSource(`data:image/jpeg;base64,${image}`);
+
+
+        //                     }
+        //                 })
+        //                 .catch(error => {
+        //                     console.error('Error uploading image:', error);
+        //                 });
+
+
+        //         })
+        //         .catch(error => {
+        //             console.error('Error converting image to base64:', error);
+        //         });
+        // });
     };
     const handleClose = () => {
         navigation.goBack();
@@ -106,7 +134,6 @@ const LiveCameraScreen = () => {
                 <VLCPlayer
                     ref={vlcPlayerRef}
                     style={styles.video}
-                    //source={{ uri: 'rtsp://admin:GreenEye7070@80.250.150.18:663/h264Preview_01_sub'}}
                     source={{ uri: cameraUrl }}
                     autoplay={true}
                     initType={2} // Use 2 for RTSP streams
@@ -119,12 +146,13 @@ const LiveCameraScreen = () => {
 
             {isLoading && (
                 <View style={styles.loadingOverlay}>
-                    <ActivityIndicator size="large" color="white" />
+                    <ActivityIndicator size="large" color="black" />
                     <Text style={styles.result} >Loading please wait..</Text>
                 </View>
             )}
                 <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-                    <EntypoIcon name="cross" size={40} color="#2a7312" />
+                    <EntypoIcon name="arrow-long-right" size={40} color="#2a7312" />
+                    <Text style={styles.buttonText2}>Home</Text>
                 </TouchableOpacity>
             {!isLoading && (
                 <TouchableOpacity style={styles.captureButton} onPress={captureScreen}>
@@ -139,10 +167,10 @@ const LiveCameraScreen = () => {
                     <Image
                         source={imageSource ? { uri: imageSource } : { uri: uri }}
                         style={styles.previewImage}
-                        resizeMode="contain"
+                        resizeMode="cover"
                     />
-                    <TouchableOpacity style={styles.captureButton} onPress={closeCapture}>
-                        <EntypoIcon name="cross" size={40} color="white" />
+                    <TouchableOpacity style={styles.CloseCaptureButton} onPress={closeCapture}>
+                        <EntypoIcon name="cross" size={40} color="#2a7312" />
                     </TouchableOpacity>
                 </View>
             ) : null}
@@ -155,7 +183,7 @@ const SCREEN_WIDTH = Dimensions.get("screen").width;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'black',
+        backgroundColor: 'white',
     },
     video: {
         flex: 1,
@@ -164,7 +192,7 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'white',
     },
 
     closeButton: {
@@ -176,21 +204,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
         color: 'green',
-    },
-
-    snapshotContainer: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 1,
-    },
-    snapshotImage: {
-        width: 200,
-        height: 200,
-        borderRadius: 10,
-        borderWidth: 2,
-        borderColor: 'white',
+        marginTop:10,
     },
     buttonText2: {
         fontSize: 16,
@@ -198,20 +212,31 @@ const styles = StyleSheet.create({
         color: '#2a7312',
     },
     previewContainer: {
-        flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#000",
+        marginTop:10,
     },
     viewShot: {
         width: SCREEN_WIDTH,
-        height: SCREEN_WIDTH,
+        height: 280,
+
     },
-    previewImage: { width: 200, height: 200, backgroundColor: "#fff" },
+    previewImage: {
+        width: 300,
+        height: 300,
+        borderRadius: 10,
+        },
+    CloseCaptureButton: {
+            alignItems: 'center',
+            position: 'absolute',
+            top: 20,
+    },
     result: {
         marginTop: 30,
         fontSize: 20,
-        color: "white",
+        color: "green",
+
+
     }
 });
 

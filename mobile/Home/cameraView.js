@@ -38,20 +38,24 @@ const CameraView = () => {
         navigation.goBack();
     };
 
+    
+
     async function HandlePhoto() {
         try {
             setImageDetails('');
             setIsImageFromCls(false);
+            
             const photo = await camera.current.takePhoto();
 
             setImageSource(`file://${photo.path}`);
             setImageDetails("waiting for results..");
             const base64Image = await RNFS.readFile(photo.path, 'base64');
-            const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token });
+            const broadcastCamera = false;
+            const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token,broadcastCamera });
             //const response = await axios.post('https://backend-greeneye.onrender.com/selfCamera', { base64Image, token });
             console.log('Image uploaded successfully');
             const { label, confidence, image } = response.data;
-            const detailString = `Result: ${label}\nConfidence: ${confidence}%`;
+            const detailString = `Result: ${label} Confidence: ${confidence}%`;
             setImageDetails(detailString);
 
             if (image) {
@@ -90,6 +94,8 @@ const CameraView = () => {
             <TouchableOpacity style={styles.captureButton} onPress={HandlePhoto}>
                 <EntypoIcon name="camera" size={40} color="#2a7312" />
                 <Text style={styles.buttonText2}>Take Photo</Text>
+                <Text style={styles.result}>{imageDetails}</Text>
+
             </TouchableOpacity>
             {imageSource ? (
                 <View style={styles.previewContainer}>
@@ -103,7 +109,6 @@ const CameraView = () => {
                     <TouchableOpacity style={styles.CloseCaptureButton} onPress={closeCapture}>
                         <EntypoIcon name="cross" size={40} color="#2a7312" />
                     </TouchableOpacity>
-                    <Text style={styles.result}>{imageDetails}</Text>
                 </View>
             ) : null}
         </View>
@@ -111,16 +116,16 @@ const CameraView = () => {
 };
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
-const SCREEN_HEIGHT = Dimensions.get("screen").height;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
+        backgroundColor: 'white',
+
     },
     cameraContainer: {
         width: SCREEN_WIDTH,
-        height: 400,
+        height: 350,
     },
     cameraStyle: {
         flex: 1,
@@ -131,8 +136,9 @@ const styles = StyleSheet.create({
         right: 5,
     },
     previewContainer: {
+        justifyContent: "center",
         alignItems: "center",
-        position: "relative",
+        marginTop:25,
     },
     previewImage: {
         width: 300,
@@ -146,8 +152,10 @@ const styles = StyleSheet.create({
     },
     captureButton: {
         alignItems: 'center',
-        position: 'absolute',
-        bottom: 40,
+        position: 'relative',
+        color: 'green',
+        marginTop:20,
+        
     },
     CloseCaptureButton: {
         alignItems: 'center',
@@ -155,15 +163,9 @@ const styles = StyleSheet.create({
         top: 20,
     },
     result: {
-        fontSize: 25,
-        color: "#2a7312",
-        position: "absolute",
-        bottom: 0,
-        backgroundColor: "white",
-        width: 300,
-        fontFamily: "Roboto",
-        fontWeight: "bold",
-        borderRadius: 5,
+        marginTop: 30,
+        fontSize: 20,
+        color: "green",
     }
 });
 

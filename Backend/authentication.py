@@ -39,62 +39,65 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 @router.post("/login")
 async def login_validation(data: dict):
-    print("Try login...")
-    # Check for empty fields
-    if not all(data.values()):
-        return {"status": "empty_fields"}
+    try:
+        print("Try login...")
+        # Check for empty fields
+        if not all(data.values()):
+            return {"status": "empty_fields"}
 
-    existing_user = collection.find_one({"email": data['email']})
+        existing_user = collection.find_one({"email": data['email']})
 
-    if existing_user:
-        if bcrypt.checkpw(data['password'].encode('utf-8'), existing_user['password'].encode('utf-8')):
-            existing_user['_id'] = str(existing_user['_id'])
+        if existing_user:
+            if bcrypt.checkpw(data['password'].encode('utf-8'), existing_user['password'].encode('utf-8')):
+                existing_user['_id'] = str(existing_user['_id'])
 
-            current_key = os.getenv("SECRET_KEY")
-            expiration_date = datetime.utcnow() + timedelta(days=1)
+                current_key = os.getenv("SECRET_KEY")
+                expiration_date = datetime.utcnow() + timedelta(days=1)
 
-            token_data = {
-                "user_id": str(existing_user['_id']),
-                "exp": expiration_date
-            }
-            token = jwt.encode(token_data, current_key, algorithm=algo)
+                token_data = {
+                    "user_id": str(existing_user['_id']),
+                    "exp": expiration_date
+                }
+                token = jwt.encode(token_data, current_key, algorithm=algo)
 
-            return {"status": "success", "user": existing_user, "token": token}
+                return {"status": "success", "user": existing_user, "token": token}
 
-    return {"status": "incorrect_details"}
+        return {"status": "incorrect_details"}
+
+    except Exception as e:
+        return {"status": f"Unknown Error:, ${e}"}
 
 
 @router.post("/register")
 async def register_validation(data: dict):
-    if not all(data.values()):
-        return {"status": "empty_fields"}
+    try:
+        if not all(data.values()):
+            return {"status": "empty_fields"}
 
-    if len(data['password']) < 6:
-        return {"status": "short_password"}
+        if len(data['password']) < 6:
+            return {"status": "short_password"}
 
-    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-    if not re.match(email_regex, data['email']):
-        return {"status": "invalid_email"}
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(email_regex, data['email']):
+            return {"status": "invalid_email"}
 
-    existing_user = collection.find_one({"email": data['email']})
-    if existing_user:
-        return {"status": "email_already_registered"}
+        existing_user = collection.find_one({"email": data['email']})
+        if existing_user:
+            return {"status": "email_already_registered"}
 
-    if data['password'] != data['confirmPassword']:
-        return {"status": "mismatch"}
+        if data['password'] != data['confirmPassword']:
+            return {"status": "mismatch"}
 
-    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
-    collection.insert_one({
-        "username": data['username'],
-        "email": data['email'],
-        "password": hashed_password.decode('utf-8'),
-        "images": [],
-        "cameraUrl": 'None',
-        "fcmToken": data['fcmToken']
-    })
+        hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+        collection.insert_one({
+            "username": data['username'],
+            "email": data['email'],
+            "password": hashed_password.decode('utf-8'),
+            "images": [],
+            "cameraUrl": 'None',
+            "fcmToken": data['fcmToken']
+        })
 
-    return {"status": "success"}
-
-
-
-
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": f"Unknown Error:, ${e}"}

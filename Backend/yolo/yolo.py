@@ -23,7 +23,7 @@ def classify(image_to_classify):
     im = Image.fromarray(image_to_classify)
     yolo_results = model.predict(im)
     render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
-    #render.show()
+    render.show()
     # Convert the image to RGB mode
     if render.mode == 'RGBA':
         render = render.convert('RGB')
@@ -37,21 +37,21 @@ def classify(image_to_classify):
 
     yolo_class_indices = yolo_results[0].boxes.cls.tolist()
     yolo_confidences = yolo_results[0].boxes.conf.tolist()
-
+    maxSickConfidence = 0
     for box, class_index, confidence in zip(yolo_boxes, yolo_class_indices, yolo_confidences):
         x_min, y_min, x_max, y_max = box
         class_label = labels[int(class_index)]
         predictDic[class_label] = (predictDic[class_label][0] + 1, predictDic[class_label][1] + confidence)
         if class_label == 'Sick':
             foundSickLeaves = True
+            if confidence > maxSickConfidence:
+                maxSickConfidence = confidence
         print(
             f"Detected {class_label} with confidence {confidence:.2f} at coordinates: ({x_min}, {y_min}, {x_max}, {y_max})")
 
     if foundSickLeaves:
-        max_label = 'Sick'
+        return {'label': 'Sick', 'confidence': round(maxSickConfidence * 100, 2), 'image': img_str}
     else:
-        max_label = 'Healthy'
-
-    avg_confidence = predictDic[max_label][1] / predictDic[max_label][0] if predictDic[max_label][0] > 0 else 1
-    return {'label': max_label, 'confidence': round(avg_confidence * 100, 2), 'image': img_str}
+        avg_confidence = predictDic['Healthy'][1] / predictDic['Healthy'][0] if predictDic['Healthy'][0] > 0 else 1
+        return {'label': 'Healthy', 'confidence': round(avg_confidence * 100, 2), 'image': img_str}
 

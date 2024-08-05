@@ -26,7 +26,6 @@ from firebase_admin import credentials, messaging
 cred = credentials.Certificate("./private.json")
 firebase_admin.initialize_app(cred)
 
-
 scheduler = AsyncIOScheduler()
 
 load_dotenv()
@@ -63,7 +62,6 @@ def read_file_as_image(data) -> np.ndarray:
 
 @router.post("/predict")
 async def predict(file: UploadFile = File(...)):
-
     image = read_file_as_image(await file.read())
     predTuple = classify(image)
 
@@ -92,7 +90,7 @@ class ImageData(BaseModel):
     token: str
 
 
-@router.post("/manualCapture") #manual capture of broadcast camera
+@router.post("/manualCapture")  # manual capture of broadcast camera
 async def receive_image(data: ImageData):
     try:
         userId = ObjectId(get_current_user(data.token))
@@ -126,7 +124,8 @@ async def receive_image(data: ImageData):
 
         return result
 
-
+    except HTTPException:
+        return {"status":"Unknown Error"}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
@@ -137,6 +136,8 @@ class obj:
         self.url = url
         self.description = description
         self.uploaded = uploaded
+
+
 
 
 @router.post("/latestHistory")
@@ -282,15 +283,23 @@ async def receive_image(data: dict):
         image_data = base64.b64decode(encoded_image)
 
         # name = input("Enter image name: ")
-        # image_path = rf'C:\Users\omerh\\Desktop\n\{name}.jpg'
+        # image_path = rf'C:\Users\omerh\\Desktop\images\{name}.jpg'
         # array = load_image_to_array(image_path)
         # upload_response = upload_image_to_cloudinary(image_path)
         # image_url = upload_response.get("url")
         # predTuple = classify(array)
 
+        if data['broadcastCamera']: #if its broadcast camera dont rotate
+            angle = 0
+        else:
+            angle = 90
+
         image = Image.open(io.BytesIO(image_data))
-        rotated_image = image.rotate(90, expand=True)
+        rotated_image = image.rotate(angle, expand=True)
         buffer = io.BytesIO()
+        if rotated_image.mode == 'RGBA':
+            rotated_image = rotated_image.convert('RGB')
+
         rotated_image.save(buffer, format="JPEG")
         # image.save(buffer, format="JPEG")
         buffer.seek(0)
@@ -340,64 +349,68 @@ def capture_frame(camera_url):
 
 
 def identificationExplore():
-    for user in collection.find():
-        cameraUrl = user['cameraUrl']
-        if cameraUrl != 'None':
-            frame = capture_frame(cameraUrl)
-            predTuple = classify(frame)
-            if predTuple['label'] != 'No identify' and predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
-                # if predTuple[1] > 20:
-                with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as file:
-                    file_path = file.name
-                # Write frame to the temporary file using OpenCV
-                cv2.imwrite(file_path, frame)
+    try:
+        for user in collection.find():
+            cameraUrl = user['cameraUrl']
+            if cameraUrl != 'None':
+                frame = capture_frame(cameraUrl)
+                predTuple = classify(frame)
+                if predTuple['label'] != 'No identify' and predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
+                    # if predTuple['confidence'] > 20:
+                    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as file:
+                        file_path = file.name
+                    # Write frame to the temporary file using OpenCV
+                    cv2.imwrite(file_path, frame)
 
-                # Upload to Cloudinary
-                response = upload(file_path, folder="your_folder_name")  # specify your folder name
-                image_url = response.get("url")
-                os.remove(file_path)
+                    # Upload to Cloudinary
+                    response = upload(file_path, folder="your_folder_name")  # specify your folder name
+                    image_url = response.get("url")
+                    os.remove(file_path)
 
-                update_result = collection.update_one(
-                    {"_id": user['_id']},
-                    {
-                        "$push": {
-                            "images": {
-                                "url": image_url,
-                                # "url": upload_response['url'],
-                                "description": f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%",
-                                "uploaded": datetime.date.today().isoformat(),
-                                "isManual": False,
-                                "isAutomatic": True
+                    update_result = collection.update_one(
+                        {"_id": user['_id']},
+                        {
+                            "$push": {
+                                "images": {
+                                    "url": image_url,
+                                    # "url": upload_response['url'],
+                                    "description": f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%",
+                                    "uploaded": datetime.date.today().isoformat(),
+                                    "isManual": False,
+                                    "isAutomatic": True
+                                }
                             }
                         }
-                    }
-                )
+                    )
 
-                if update_result.modified_count == 0:
-                    return {"message": "Failed to update the database"}
-                else:
-                    print(f"success with user {user['username']}")
-
-                    # Send Notification
-                    fcm_token = user['fcmToken']
-                    if fcm_token:
-                        # Create a message for FCM
-                        message = messaging.Message(
-                            notification=messaging.Notification(
-                                title="Alert",
-                                body=f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%"
-                            ),
-                            token=fcm_token
-                        )
-
-                        # Send the message
-                        response = messaging.send(message)
-                        print('Successfully sent message:', response)
+                    if update_result.modified_count == 0:
+                        return {"message": "Failed to update the database"}
                     else:
-                        print(f"No FCM token for user {user['username']}")
+                        print(f"success with user {user['username']}")
+
+                        # Send Notification
+                        fcm_token = user['fcmToken']
+                        if fcm_token:
+                            # Create a message for FCM
+                            message = messaging.Message(
+                                notification=messaging.Notification(
+                                    title="Alert",
+                                    body=f"Result: {predTuple['label']}, confidence: {predTuple['confidence']}%"
+                                ),
+                                token=fcm_token
+                            )
+
+                            # Send the message
+                            response = messaging.send(message)
+                            print('Successfully sent message:', response)
+                        else:
+                            print(f"No FCM token for user {user['username']}")
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"An error occurred: {e}")
 
 
-def uploadImageToDatabase(userId, imageUrl, predTuple,detectionType):
+def uploadImageToDatabase(userId, imageUrl, predTuple, detectionType):
     isManual = False
     isAuto = False
     if detectionType == "manual":
@@ -433,5 +446,5 @@ def uploadImageToDatabase(userId, imageUrl, predTuple,detectionType):
 async def start_scheduler():
     # Schedule the function to run every 5 seconds
     scheduler.add_job(identificationExplore, 'interval', hours=3)
-    # scheduler.add_job(identificationExplore, 'interval', seconds=30)
+    # scheduler.add_job(identificationExplore, 'interval', seconds=60)
     scheduler.start()

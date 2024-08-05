@@ -58,8 +58,8 @@ const Login = () => {
 
         else {
           // Handle other cases if needed
-          setDetailMessage('Login failed..');
-          console.log('Login failed: ', res.data.message);
+          setDetailMessage('Login failed');
+          //console.log('Login failed: ', res.data.message);
         }
       }
 
@@ -69,7 +69,7 @@ const Login = () => {
         //console.error('Request timed out. Please try again.');
         setColorDetails('red');
         setDetailMessage('No response from server');
-        console.error(error);
+        //console.error(error);
       } else {
         console.error('Error:', error.message);
       }
