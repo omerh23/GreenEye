@@ -20,7 +20,7 @@ const LiveCameraScreen = () => {
     const [imageSource, setImageSource] = useState('');
     const viewShot = useRef(null);
     const [uri, setUri] = useState("");
-
+    const [detailMessage,setDetailMessage] = useState('Loading please wait..');
     useEffect(() => {
         const getUserData = async () => {
             try {
@@ -38,6 +38,29 @@ const LiveCameraScreen = () => {
 
         getUserData();
     }, []);
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    useEffect(() => {
+        let timeout;
+
+        const handleTimeout = async () => {
+            timeout = setTimeout(async () => {
+                if (isLoading) {
+                    setDetailMessage('The video cannot upload');
+                    await sleep(3000);
+                    navigation.navigate('Home');
+                }
+            }, 500000);
+        };
+
+        if (isLoading) {
+            handleTimeout();
+        }
+
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [isLoading, navigation]);
 
 
     //user capture image from broadcast camera
@@ -67,47 +90,9 @@ const LiveCameraScreen = () => {
             console.error('Error fetching data:', error);
         }
 
-
-
-
-
-        // viewShot.current.capture().then(async (uri) => {
-        //     setImageSource('');
-        //     setUri(uri);
-        //     setImageDetails('Waiting for results..');
-        //     const token = await AsyncStorage.getItem('token');
-        //     Convert image to base64
-        //     RNFS.readFile(uri, 'base64')
-        //         .then(base64String => {
-        //             // Send the base64 string to the server
-        //             //https://backend-greeneye.onrender.com
-        //              axios.post('http://10.0.2.2:8000/manualCapture', {
-        //                 imageUri: `data:image/png;base64,${base64String}`,
-        //                 token:token
-        //             })
-        //                 .then(response => {
-        //                     console.log('Image uploaded successfully from broadcast camera');
-        //                     //setUri("");
-        //                     const { label, confidence, image } = response.data;
-        //                     const detailString = `Result: ${label}, Confidence: ${confidence}%`;
-        //                     setImageDetails(detailString);
-        //                     if (image) {
-        //                         setImageSource(`data:image/jpeg;base64,${image}`);
-
-
-        //                     }
-        //                 })
-        //                 .catch(error => {
-        //                     console.error('Error uploading image:', error);
-        //                 });
-
-
-        //         })
-        //         .catch(error => {
-        //             console.error('Error converting image to base64:', error);
-        //         });
-        // });
+    
     };
+    
     const handleClose = () => {
         navigation.goBack();
     };
@@ -147,7 +132,7 @@ const LiveCameraScreen = () => {
             {isLoading && (
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="black" />
-                    <Text style={styles.result} >Loading please wait..</Text>
+                    <Text style={styles.result} >{detailMessage}</Text>
                 </View>
             )}
                 <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
