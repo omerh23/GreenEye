@@ -23,7 +23,7 @@ def classify(image_to_classify):
     im = Image.fromarray(image_to_classify)
     yolo_results = model.predict(im)
     render = render_result(model=model, image=image_to_classify, result=yolo_results[0])
-    render.show()
+    #render.show()
     # Convert the image to RGB mode
     if render.mode == 'RGBA':
         render = render.convert('RGB')

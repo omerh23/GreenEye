@@ -1,16 +1,20 @@
 import React, {useRef, useEffect, useState} from 'react';
 import {View, TouchableOpacity, Text, StyleSheet, Image, Dimensions} from 'react-native';
-import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
+import { Camera, useCameraDevice, useCameraPermission, useCameraFormat } from 'react-native-vision-camera';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
 import RNFS from "react-native-fs";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axiosInstance from '../axiosConfig';
 
 const CameraView = () => {
     const camera = useRef(null);
     const { hasPermission, requestPermission } = useCameraPermission();
-    const device = useCameraDevice('front');
+    const device = useCameraDevice('back');
+    const format = useCameraFormat(device, [
+        { photoResolution: { width: 1280, height: 720 } },
+      ])
     const navigation = useNavigation();
     const [imageSource, setImageSource] = useState('');
     const [token, setToken] = useState(null);
@@ -21,10 +25,7 @@ const CameraView = () => {
         const initializeCamera = async () => {
             try {
                 await requestPermission();
-                if (hasPermission) {
-                    console.log('Has permission');
-
-                }
+                
                 const storedToken = await AsyncStorage.getItem('token');
                 setToken(storedToken);
             } catch (error) {
@@ -51,8 +52,7 @@ const CameraView = () => {
             setImageDetails("waiting for results..");
             const base64Image = await RNFS.readFile(photo.path, 'base64');
             const broadcastCamera = false;
-            const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token,broadcastCamera });
-            //const response = await axios.post('https://backend-greeneye.onrender.com/selfCamera', { base64Image, token });
+            const response = await axiosInstance.post('/selfCamera', { base64Image, token,broadcastCamera });
             console.log('Image uploaded successfully');
             const { label, confidence, image } = response.data;
             const detailString = `Result: ${label} Confidence: ${confidence}%`;
@@ -84,6 +84,7 @@ const CameraView = () => {
                     device={device}
                     isActive={true}
                     photo={true}
+                    format={format}
                 />
                 <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
                     <EntypoIcon name="arrow-long-right" size={40} color="#2a7312" />
@@ -102,7 +103,7 @@ const CameraView = () => {
                     <Text style={styles.buttonText2}>Preview</Text>
                     <Image
                         source={{ uri: imageSource }}
-                        style={[styles.previewImage, !isImageFromCls ? { transform: [{ rotate: '-90deg' }] } : {}]}
+                        style={styles.previewImage}
                         resizeMode="cover"
                     />
 
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     },
     cameraContainer: {
         width: SCREEN_WIDTH,
-        height: 350,
+        height: 300,
     },
     cameraStyle: {
         flex: 1,
@@ -142,9 +143,10 @@ const styles = StyleSheet.create({
     },
     previewImage: {
         width: 300,
-        height: 300,
+        height: 200,
         borderRadius: 10,
     },
+    
     buttonText2: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
         color: 'green',
-        marginTop:20,
+        marginTop:15,
         
     },
     CloseCaptureButton: {
@@ -163,7 +165,7 @@ const styles = StyleSheet.create({
         top: 20,
     },
     result: {
-        marginTop: 30,
+        marginTop: 20,
         fontSize: 20,
         color: "green",
     }

@@ -292,7 +292,7 @@ async def receive_image(data: dict):
         if data['broadcastCamera']: #if its broadcast camera dont rotate
             angle = 0
         else:
-            angle = 90
+            angle = -90
 
         image = Image.open(io.BytesIO(image_data))
         rotated_image = image.rotate(angle, expand=True)
@@ -312,7 +312,7 @@ async def receive_image(data: dict):
         predTuple = classify(np.array(rotateImg))
 
         result = predTuple
-        if predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
+        if predTuple['confidence'] > 20 and predTuple['label'] == 'Sick':
             # Upload to Cloudinary
             response = upload(file_path, folder="your_folder_name")  # specify your folder name
             image_url = response.get("url")
@@ -355,7 +355,7 @@ def identificationExplore():
             if cameraUrl != 'None':
                 frame = capture_frame(cameraUrl)
                 predTuple = classify(frame)
-                if predTuple['label'] != 'No identify' and predTuple['confidence'] > 50 and predTuple['label'] == 'Sick':
+                if predTuple['label'] != 'No identify' and predTuple['label'] == 'Sick':
                     # if predTuple['confidence'] > 20:
                     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as file:
                         file_path = file.name
@@ -445,6 +445,6 @@ def uploadImageToDatabase(userId, imageUrl, predTuple, detectionType):
 @router.on_event("startup")
 async def start_scheduler():
     # Schedule the function to run every 5 seconds
-    scheduler.add_job(identificationExplore, 'interval', hours=3)
-    # scheduler.add_job(identificationExplore, 'interval', seconds=60)
+    #scheduler.add_job(identificationExplore, 'interval', hours=3)
+    scheduler.add_job(identificationExplore, 'interval', seconds=180)
     scheduler.start()

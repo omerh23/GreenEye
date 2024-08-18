@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS from 'react-native-fs';
 import ViewShot from "react-native-view-shot";
 import {fetchUserData} from "../userUtils";
+import axiosInstance from '../axiosConfig';
 
 
 const LiveCameraScreen = () => {
@@ -21,6 +22,9 @@ const LiveCameraScreen = () => {
     const viewShot = useRef(null);
     const [uri, setUri] = useState("");
     const [detailMessage,setDetailMessage] = useState('Loading please wait..');
+    const cameraRef = useRef(null);
+
+    
     useEffect(() => {
         const getUserData = async () => {
             try {
@@ -46,11 +50,11 @@ const LiveCameraScreen = () => {
         const handleTimeout = async () => {
             timeout = setTimeout(async () => {
                 if (isLoading) {
-                    setDetailMessage('The video cannot upload');
+                    setDetailMessage('Timeout: Bad internet connection');
                     await sleep(3000);
                     navigation.navigate('Home');
                 }
-            }, 500000);
+            }, 60000);
         };
 
         if (isLoading) {
@@ -74,7 +78,7 @@ const LiveCameraScreen = () => {
             const token = await AsyncStorage.getItem('token');
             const base64Image = await RNFS.readFile(uri, 'base64');
             const broadcastCamera = true;
-            const response = await axios.post('http://10.0.2.2:8000/selfCamera', { base64Image, token,broadcastCamera });
+            const response = await axiosInstance.post('/selfCamera', { base64Image, token,broadcastCamera });
 
             console.log('Image uploaded successfully from broadcast camera');
             const { label, confidence, image } = response.data;
@@ -208,7 +212,7 @@ const styles = StyleSheet.create({
     },
     previewImage: {
         width: 300,
-        height: 300,
+        height: 250,
         borderRadius: 10,
         },
     CloseCaptureButton: {

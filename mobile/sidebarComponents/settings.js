@@ -5,6 +5,7 @@ import {fetchUserData} from "../userUtils";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Logo from "../Home/logo";
+import axiosInstance from '../axiosConfig';
 
 
 const Settings = () => {
@@ -53,9 +54,8 @@ const Settings = () => {
         setNewPasswordBorder('#2a7312');
         setDetailMessage('');
         setColorDetails('red');
-        // const res = await axios.post('https://backend-greeneye.onrender.com/changeDetails',{token,username
-        // ,email,oldPassword,newPassword,cameraUrl});
-        const res = await axios.post('http://10.0.2.2:8000/changeDetails',{token,username
+        
+        const res = await axiosInstance.post('/changeDetails',{token,username
             ,email,oldPassword,newPassword,cameraUrl});
 
         console.log(res.data.status);

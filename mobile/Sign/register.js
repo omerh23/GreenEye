@@ -11,6 +11,7 @@ import {styles} from "./login";
 import axios from "axios";
 import Modal from 'react-native-modal'; // Import the modal component
 import messaging from '@react-native-firebase/messaging';
+import axiosInstance from '../axiosConfig';
 
 
 const Register = () => {
@@ -39,7 +40,7 @@ const Register = () => {
             const fcmToken = await messaging().getToken();
             setDetailMessage('Loading please wait..');
             //const res = await axios.post('https://backend-greeneye.onrender.com/register', { password, confirmPassword, username, email,fcmToken});
-            const res = await axios.post('http://10.0.2.2:8000/register', { password, confirmPassword, username, email,fcmToken});
+            const res = await axiosInstance.post('/register', { password, confirmPassword, username, email,fcmToken});
 
             console.log(res.data.status);
 
@@ -92,8 +93,11 @@ const Register = () => {
                 style={styles.backgroundImage}
                 resizeMode="cover"
             />
-            <Image source={require('../images/gelogo.png')} style={styles.logo} />
-
+        <View style={styles.logo}>
+            <TouchableOpacity>
+                <Image source={require('../images/nlogo.png')} style={styles.logo} />
+            </TouchableOpacity>
+        </View>
             <View style={styles.form}>
                 <Text style={styles.loginheader}>Register</Text>
                 <Text style={styles.label}>Name:</Text>

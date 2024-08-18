@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {fetchUserData} from "../userUtils";
 import {useNavigation} from "@react-navigation/native";
 import Logo from "./logo";
+import axiosInstance from "../axiosConfig";
 
 const History = () => {
     const [user, setUser] = useState(null);
@@ -45,8 +46,7 @@ const History = () => {
             setHistoryAutomaticDetectionButton(false);
             setIsLoading(true);
 
-            const res = await axios.post('http://10.0.2.2:8000/latestHistory', {token});
-            //const res = await axios.post('https://backend-greeneye.onrender.com/latestHistory', {token});
+            const res = await axiosInstance.post('/latestHistory', {token});
             setData(res.data);
         }catch (error) {
             console.error('Error fetching data:', error);
@@ -63,8 +63,7 @@ const History = () => {
             setAllHistoryButton(false);
             setHistoryAutomaticDetectionButton(false);
             setIsLoading(true);
-            //const res = await axios.post('https://backend-greeneye.onrender.com/manualDetectionHistory', {token});
-            const res = await axios.post('http://10.0.2.2:8000/manualDetectionHistory', {token});
+            const res = await axiosInstance.post('/manualDetectionHistory', {token});
 
             setData(res.data);
         } catch (error) {
@@ -80,8 +79,7 @@ const History = () => {
             setAllHistoryButton(false);
             setManualDetectionButton(false);
             setIsLoading(true);
-            // const res = await axios.post('https://backend-greeneye.onrender.com/automaticDetectionHistory', {token});
-            const res = await axios.post('http://10.0.2.2:8000/automaticDetectionHistory', {token});
+            const res = await axiosInstance.post('/automaticDetectionHistory', {token});
 
             setData(res.data);
         }catch (error) {

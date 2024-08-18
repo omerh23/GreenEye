@@ -6,12 +6,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  Image
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Logo from '../Home/logo';
-
+import axiosInstance from '../axiosConfig';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,12 +26,8 @@ const Login = () => {
       setDetailMessage('');
       setColorDetails('#2a7312');
       setDetailMessage('Loading please wait..');
-      // const res = await axios.post('https://backend-greeneye.onrender.com/login',
-      //     { email,
-      //             password
-      //           },
-      //     {timeout:50000});
-      const res = await axios.post('http://10.0.2.2:8000/login',
+      
+      const res = await axiosInstance.post('/login',
           { email,
             password
           },
@@ -105,7 +101,11 @@ const Login = () => {
         style={styles.backgroundImage}
         resizeMode="cover"
       />
-      <Logo/>
+      <View style={styles.logo}>
+            <TouchableOpacity>
+                <Image source={require('../images/nlogo.png')} style={styles.logo} />
+            </TouchableOpacity>
+      </View>
       <View style={styles.form}>
         <Text style={styles.loginheader}>Login</Text>
         <Text style={styles.label}>Email:</Text>
@@ -185,6 +185,7 @@ export const styles = StyleSheet.create({
   },
   input: {
     height: 40,
+    width: 220,
     borderColor: '#2a7312',
     borderWidth: 1,
     marginBottom: 15,
