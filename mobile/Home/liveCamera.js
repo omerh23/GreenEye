@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     },
     viewShot: {
         width: SCREEN_WIDTH,
-        height: 280,
+        height: 205,
 
     },
     previewImage: {
