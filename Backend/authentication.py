@@ -45,7 +45,7 @@ async def login_validation(data: dict):
         if not all(data.values()):
             return {"status": "empty_fields"}
 
-        existing_user = collection.find_one({"email": data['email']})
+        existing_user = collection.find_one({"email": data['email'].lower()})
 
         if existing_user:
             if bcrypt.checkpw(data['password'].encode('utf-8'), existing_user['password'].encode('utf-8')):
@@ -91,7 +91,7 @@ async def register_validation(data: dict):
         hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
         collection.insert_one({
             "username": data['username'],
-            "email": data['email'],
+            "email": data['email'].lower(),
             "password": hashed_password.decode('utf-8'),
             "images": [],
             "cameraUrl": 'None',
