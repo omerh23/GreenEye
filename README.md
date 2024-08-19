@@ -63,8 +63,7 @@ This repository contains a server-client application designed to identify diseas
    ```
 5. **Url setup**
 
-  1. open axiosConfig.js
-  2. change baseURL to your's computer ipv4 address
+   open axiosConfig.js and change baseURL to your's computer ipv4 address
 
 ### Running the Application
 
